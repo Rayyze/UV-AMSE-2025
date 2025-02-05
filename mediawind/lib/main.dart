@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:mediawind/item.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'GraceWind',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -30,7 +34,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'MediaWind'),
+      home: const MyHomePage(title: 'GraceWind'),
     );
   }
 }
@@ -55,11 +59,101 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String title = "";
+  List<Item> widgetItems = [];
+  String contentType = "";
 
   @override
   void initState() {
     super.initState();
     title = widget.title;
+    widgetItems = [];
+    contentType = "loading";
+    updateItemList("all");
+  }
+
+  Future<void> updateItemList(String type) async {
+    List<Item> items = [];
+    List<String> urls = [];
+    switch (type) {
+      case 'all':
+        urls.add("https://eldenring.fanapis.com/api/creatures");
+        urls.add("https://eldenring.fanapis.com/api/bosses");
+    }
+
+    for(String url in urls) {
+      bool hasMoreData = true;
+      int page = 0;
+      int count = 0;
+      while (hasMoreData) {
+        final response = await http.get(Uri.parse('$url?limit=100&page=$page'));
+        if(response.statusCode == 200) {
+          final data = jsonDecode(response.body) ?? <String, dynamic>{};
+          if (data.containsKey('data')) {
+            List elements = data['data'];
+            count += elements.length;
+            for(Map<String, dynamic> element in elements) {
+              items.add(Item.fromJson(element));
+            }
+            if (count >= (data['total'] ?? 0)) {
+              hasMoreData = false;
+            } else {
+              page++;
+            }
+          }
+        }
+      }
+    }
+    
+    setState(() {
+      widgetItems = items;
+      contentType = "list";
+    });
+  }
+
+  List<Widget> itemsToWidgets(List<Item> itemList) {
+    return itemList.map((elt) {
+      return SizedBox(
+        height: 80,
+        width: double.infinity,
+        child: Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+          child: Row(children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: Image.network(
+                elt.image,
+                fit: BoxFit.fitHeight,
+              ),
+            ),
+            Column(children: [
+              Row(children: [
+                SizedBox(width: 10),
+                Text(elt.name),
+                SizedBox(width: 50),
+                Icon(Icons.star),
+              ]),
+              Text(elt.description)
+            ])
+          ]),
+        ),
+      );
+    }).toList();
+  }
+
+  Widget updateMainWidget() {
+    switch (contentType) {
+      case 'loading':
+        return Center(child: CircularProgressIndicator());
+      case 'list':
+        return ListView(
+          shrinkWrap: true,
+          children: itemsToWidgets(widgetItems),
+        );
+      case 'page':
+        return Icon(Icons.dangerous);
+      default:
+        return Icon(Icons.dangerous);
+    }
   }
 
   @override
@@ -84,49 +178,49 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               child: Icon(Icons.whatshot, size: 100,)
             ),
-            ListTile(
-              leading: Icon(Icons.sports_mma),
-              title: Text("Bosses"),
-              onTap: (){
-                setState(() {
-                  title = "Bosses";
-                });
-                Navigator.pop(context);
-              },
-            )
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+              child: ListTile(
+                leading: Icon(Icons.home),
+                title: Text("Home"),
+                onTap: (){
+                  setState(() {
+                    title = "GraceWind";
+                  });
+                  Navigator.pop(context);
+                },
+              )
+            ),
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+              child: ListTile(
+                leading: Icon(Icons.pets),
+                title: Text("Creatures"),
+                onTap: (){
+                  setState(() {
+                    title = "Creatures";
+                  });
+                  Navigator.pop(context);
+                },
+              )
+            ),
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+              child: ListTile(
+                leading: Icon(Icons.help),
+                title: Text("About"),
+                onTap: (){
+                  setState(() {
+                    title = "About";
+                  });
+                  Navigator.pop(context);
+                },
+              )
+            ),
           ],
         ),
       ),
-      body: ListView(
-        shrinkWrap: true,
-        children: <Widget>[
-          SizedBox(
-            height: 80,
-            width: double.infinity,
-            child: Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-              child: Row(children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: Image.network(
-                    "https://plus.unsplash.com/premium_photo-1710409625244-e9ed7e98f67b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fG1vdmllfGVufDB8fDB8fHww",
-                    fit: BoxFit.fitHeight,
-                  ),
-                ),
-                Column(children: [
-                  Row(children: [
-                    Icon(Icons.movie),
-                    SizedBox(width: 10),
-                    Text("Titre du film"),
-                    SizedBox(width: 50),
-                    Icon(Icons.star),
-                  ])
-                ])
-              ]),
-            ),
-          ),
-        ],
-      ),
+      body: updateMainWidget()
     );
   }
 }
