@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:mediawind/item.dart';
 
 class DataManager {
-  List<Item> widgetItems = [];
+  List<Item> items = [];
   Map<String, dynamic> itemPageMap = {};
   String baseUrl = "https://eldenring.fanapis.com/api/";
 
@@ -96,5 +96,29 @@ class DataManager {
     }
     
     return items;
+  }
+
+  List<Item> filter(List<String> types, {List<String> keywords= const []}) {
+    List<Item> filteredItems = [];
+    bool added = false;
+    for(Item item in items) {
+      added = false;
+      for(String type in types) {
+        if (item.type == type) {
+          filteredItems.add(item);
+          added = true;
+        }
+      }
+      if (added) {
+        break;
+      }
+      for (String keyword in keywords) {
+        if (item.name.toLowerCase().contains(keyword.toLowerCase()) && item.description.toLowerCase().contains(keyword.toLowerCase())) {
+          filteredItems.add(item);
+        }
+      }
+    }
+
+    return filteredItems;
   }
 }
