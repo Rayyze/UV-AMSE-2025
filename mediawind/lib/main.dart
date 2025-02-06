@@ -16,21 +16,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'GraceWind',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
         useMaterial3: true,
       ),
@@ -42,15 +27,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -61,6 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String title = "";
   List<Item> widgetItems = [];
   String contentType = "";
+  Map<String, dynamic> itemPageMap = {};
 
   @override
   void initState() {
@@ -68,16 +45,73 @@ class _MyHomePageState extends State<MyHomePage> {
     title = widget.title;
     widgetItems = [];
     contentType = "loading";
+    itemPageMap = {};
     updateItemList("all");
   }
 
+  Future<void> updateItemPageMap(Item itemToFetch) async {
+    String baseUrl = "https://eldenring.fanapis.com/api/";
+    String url = itemToFetch.type;
+    String id = itemToFetch.id;
+    final response = await http.get(Uri.parse('$baseUrl$url/$id'));
+    if(response.statusCode == 200) {
+      final data = jsonDecode(response.body) ?? <String, dynamic>{};
+      setState(() {
+        itemPageMap = data;
+        contentType = "page";
+      });
+    }
+  }
+
   Future<void> updateItemList(String type) async {
+    String baseUrl = "https://eldenring.fanapis.com/api/";
     List<Item> items = [];
     List<String> urls = [];
     switch (type) {
       case 'all':
-        urls.add("https://eldenring.fanapis.com/api/creatures");
-        urls.add("https://eldenring.fanapis.com/api/bosses");
+        urls.add("creatures");
+        urls.add("bosses");
+        urls.add("ammos");
+        urls.add("armors");
+        urls.add("items");
+        urls.add("shields");
+        urls.add("weapons");
+        urls.add("ashes");
+        urls.add("incantations");
+        urls.add("sorceries");
+        urls.add("spirits");
+        urls.add("talismans");
+        urls.add("locations");
+        urls.add("npcs");
+        urls.add("classes");
+        break;
+      case 'creatures':
+        urls.add("creatures");
+        urls.add("bosses");
+        break;
+      case 'equipments':
+        urls.add("ammos");
+        urls.add("armors");
+        urls.add("items");
+        urls.add("shields");
+        urls.add("weapons");
+        break;
+      case 'magic':
+        urls.add("ashes");
+        urls.add("incantations");
+        urls.add("sorceries");
+        urls.add("spirits");
+        urls.add("talismans");
+        break;
+      case 'locations':
+        urls.add("locations");
+        break;
+      case 'npcs':
+        urls.add("npcs");
+        break;
+      case 'classes':
+        urls.add("classes");
+        break;
     }
 
     for(String url in urls) {
@@ -85,14 +119,14 @@ class _MyHomePageState extends State<MyHomePage> {
       int page = 0;
       int count = 0;
       while (hasMoreData) {
-        final response = await http.get(Uri.parse('$url?limit=100&page=$page'));
+        final response = await http.get(Uri.parse('$baseUrl$url?limit=100&page=$page'));
         if(response.statusCode == 200) {
           final data = jsonDecode(response.body) ?? <String, dynamic>{};
           if (data.containsKey('data')) {
             List elements = data['data'];
             count += elements.length;
             for(Map<String, dynamic> element in elements) {
-              items.add(Item.fromJson(element));
+              items.add(Item.fromJson(element, url));
             }
             if (count >= (data['total'] ?? 0)) {
               hasMoreData = false;
@@ -113,31 +147,68 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Widget> itemsToWidgets(List<Item> itemList) {
     return itemList.map((elt) {
       return SizedBox(
-        height: 80,
+        height: 100,
         width: double.infinity,
-        child: Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-          child: Row(children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: Image.network(
-                elt.image,
-                fit: BoxFit.fitHeight,
-              ),
-            ),
-            Column(children: [
-              Row(children: [
+        child: GestureDetector(
+          onTap: () {
+            setState(() {
+              updateItemPageMap(elt);
+              contentType = "loading";
+            });
+          },
+          child: Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: SizedBox(
+                    width: 120,
+                    height: double.infinity,
+                    child: Image.network(
+                      elt.image,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
                 SizedBox(width: 10),
-                Text(elt.name),
-                SizedBox(width: 50),
-                Icon(Icons.star),
-              ]),
-              Text(elt.description)
-            ])
-          ]),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              elt.name,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                          Icon(Icons.star_outlined),
+                        ],
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        elt.description,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       );
     }).toList();
+  }
+
+  Widget itemPageMapToWidget() {
+    return Text("Work in progress");
   }
 
   Widget updateMainWidget() {
@@ -150,7 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: itemsToWidgets(widgetItems),
         );
       case 'page':
-        return Icon(Icons.dangerous);
+        return itemPageMapToWidget();
       default:
         return Icon(Icons.dangerous);
     }
@@ -160,12 +231,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(title),
       ),
       drawer: Drawer(
@@ -184,7 +250,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 leading: Icon(Icons.home),
                 title: Text("Home"),
                 onTap: (){
+                  updateItemList("all");
                   setState(() {
+                    contentType = "loading";
                     title = "GraceWind";
                   });
                   Navigator.pop(context);
@@ -197,8 +265,85 @@ class _MyHomePageState extends State<MyHomePage> {
                 leading: Icon(Icons.pets),
                 title: Text("Creatures"),
                 onTap: (){
+                  updateItemList("creatures");
                   setState(() {
+                    contentType = "loading";
                     title = "Creatures";
+                  });
+                  Navigator.pop(context);
+                },
+              )
+            ),
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+              child: ListTile(
+                leading: Icon(Icons.shield),
+                title: Text("Equipments"),
+                onTap: (){
+                  updateItemList("equipments");
+                  setState(() {
+                    contentType = "loading";
+                    title = "Equipments";
+                  });
+                  Navigator.pop(context);
+                },
+              )
+            ),
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+              child: ListTile(
+                leading: Icon(Icons.auto_awesome),
+                title: Text("Magic"),
+                onTap: (){
+                  updateItemList("magic");
+                  setState(() {
+                    contentType = "loading";
+                    title = "Magic";
+                  });
+                  Navigator.pop(context);
+                },
+              )
+            ),
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+              child: ListTile(
+                leading: Icon(Icons.place),
+                title: Text("Locations"),
+                onTap: (){
+                  updateItemList("locations");
+                  setState(() {
+                    contentType = "loading";
+                    title = "Locations";
+                  });
+                  Navigator.pop(context);
+                },
+              )
+            ),
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+              child: ListTile(
+                leading: Icon(Icons.people),
+                title: Text("NPCs"),
+                onTap: (){
+                  updateItemList("npcs");
+                  setState(() {
+                    contentType = "loading";
+                    title = "NPCs";
+                  });
+                  Navigator.pop(context);
+                },
+              )
+            ),
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+              child: ListTile(
+                leading: Icon(Icons.workspace_premium),
+                title: Text("Classes"),
+                onTap: (){
+                  updateItemList("classes");
+                  setState(() {
+                    contentType = "loading";
+                    title = "Classes";
                   });
                   Navigator.pop(context);
                 },
@@ -211,6 +356,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 title: Text("About"),
                 onTap: (){
                   setState(() {
+                    contentType = "about";
                     title = "About";
                   });
                   Navigator.pop(context);
