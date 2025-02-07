@@ -10,6 +10,7 @@ class DataManager {
   DataManager();
 
   Future<Map<String, dynamic>> getItemPageMap(Item itemToFetch) async {
+    items = [];
     String url = itemToFetch.type;
     String id = itemToFetch.id;
     final response = await http.get(Uri.parse('$baseUrl$url/$id'));
@@ -101,7 +102,6 @@ class DataManager {
   }
 
   List<Item> filter(List<String> types, List<String> keywords) {
-    items = [];
     List<Item> filteredItems = [];
     bool added = false;
     for(Item item in items) {
