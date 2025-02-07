@@ -15,14 +15,16 @@ class DataManager {
     final response = await http.get(Uri.parse('$baseUrl$url/$id'));
     if(response.statusCode == 200) {
       final data = jsonDecode(response.body) ?? <String, dynamic>{};
+      itemPageMap = data;
       return data;
     }
 
+    itemPageMap = {};
     return {};
   }
 
   Future<List<Item>> getItemList(String type) async {
-    List<Item> items = [];
+    items = [];
     List<String> urls = [];
     switch (type) {
       case 'all':
@@ -98,7 +100,8 @@ class DataManager {
     return items;
   }
 
-  List<Item> filter(List<String> types, {List<String> keywords= const []}) {
+  List<Item> filter(List<String> types, List<String> keywords) {
+    items = [];
     List<Item> filteredItems = [];
     bool added = false;
     for(Item item in items) {
@@ -113,12 +116,11 @@ class DataManager {
         break;
       }
       for (String keyword in keywords) {
-        if (item.name.toLowerCase().contains(keyword.toLowerCase()) && item.description.toLowerCase().contains(keyword.toLowerCase())) {
+        if (item.name.toLowerCase().contains(keyword.toLowerCase()) || item.description.toLowerCase().contains(keyword.toLowerCase())) {
           filteredItems.add(item);
         }
       }
     }
-
     return filteredItems;
   }
 }

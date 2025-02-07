@@ -38,6 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Item> widgetItems = [];
   String contentType = "";
   Map<String, dynamic> itemPageMap = {};
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
@@ -139,7 +140,24 @@ class _MyHomePageState extends State<MyHomePage> {
       case 'list':
         return ListView(
           shrinkWrap: true,
-          children: itemsToWidgets(widgetItems),
+          children: [Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              focusNode: _focusNode,
+              decoration: InputDecoration(
+                hintText: "Search...",
+                prefix: Icon(Icons.search),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              onSubmitted: (value) {
+                setState(() {
+                  widgetItems = dataManager.filter([], value.split(' '));
+                  _focusNode.requestFocus();
+                });
+              },
+            ),
+          ),
+          ...itemsToWidgets(widgetItems),]
         );
       case 'page':
         return itemPageMapToWidget();
