@@ -164,25 +164,29 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   ),
                 ),
-                PopupMenuButton(
-                  onSelected: (String category) {
-                    setState(() {
-                      if(!selectedCategoryList.contains(category)) {
-                        selectedCategoryList.add(category);
-                      } else {
-                        selectedCategoryList.remove(category);
-                      }
-                    });
-                  },
-                  itemBuilder: (context) {
-                    return categoryList.map((category) => CheckedPopupMenuItem(
-                        value: category,
-                        checked: selectedCategoryList.contains(category),
-                        child: Text(category),
-                      ),
-                    ).toList(); 
-                  },
-                )
+                GestureDetector(
+                  child: Icon(Icons.filter_list_outlined),
+                  onTap: () {
+                    showMenu(
+                      context: context,
+                      position: RelativeRect.fromLTRB(0.0, 0.0, 50.0, 50.0),
+                      items: categoryList.map((category) => PopupMenuItem(
+                          enabled: false,
+                          value: category,
+                          //checked: selectedCategoryList.contains(category),
+                          child: GestureDetector(
+                            child: Row(
+                              children: [
+                                Icon(Icons.check_box_outline_blank_outlined,),
+                                Text(category),
+                              ]
+                            )
+                          ),
+                        ),
+                      ).toList(),
+                    );
+                  }
+                ),
               ],
             ),
           ),
