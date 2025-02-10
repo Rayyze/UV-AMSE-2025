@@ -50,8 +50,8 @@ class _MyHomePageState extends State<MyHomePage> {
     contentType = "loading";
     itemPageMap = {};
     updateItemList("all");
-    categoryList = dataManager.getCategories();
-    selectedCategoryList = [];
+    categoryList = dataManager.getCategories("all");
+    selectedCategoryList = dataManager.getCategories("all");
   }
 
   Future<void> updateItemPageMap(Item itemToFetch) async {
@@ -158,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     onSubmitted: (value) {
                       setState(() {
-                        widgetItems = dataManager.filter([], value.split(' '));
+                        widgetItems = dataManager.filter(selectedCategoryList, value.split(' '));
                         _focusNode.requestFocus();
                       });
                     },
