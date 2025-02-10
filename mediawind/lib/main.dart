@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void showFilterMenu(BuildContext context, TapDownDetails details, bool animate) {
+  void showFilterMenu(BuildContext context, TapDownDetails details, bool animate) { //TODO fix gesture detector (tap on whole row)
 
     showMenu(
       popUpAnimationStyle:  animate ? AnimationStyle() : AnimationStyle(duration: Duration()),
@@ -207,7 +207,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   ),
                 ),
-                GestureDetector( //TODO
+                GestureDetector(
                   child: Icon(Icons.filter_list_outlined),
                   onTapDown: (details) => showFilterMenu(context, details, true),
                 ),
