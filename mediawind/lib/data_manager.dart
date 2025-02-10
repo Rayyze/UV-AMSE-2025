@@ -6,8 +6,13 @@ class DataManager {
   List<Item> items = [];
   Map<String, dynamic> itemPageMap = {};
   String baseUrl = "https://eldenring.fanapis.com/api/";
+  List<String> categories = ["classes", "weapons"];
 
   DataManager();
+
+  List<String> getCategories() {
+    return categories;
+  }
 
   Future<Map<String, dynamic>> getItemPageMap(Item itemToFetch) async {
     items = [];

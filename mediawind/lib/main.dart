@@ -39,6 +39,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String contentType = "";
   Map<String, dynamic> itemPageMap = {};
   final FocusNode _focusNode = FocusNode();
+  List<String> categoryList = [];
+  List<String> selectedCategoryList = [];
 
   @override
   void initState() {
@@ -48,6 +50,8 @@ class _MyHomePageState extends State<MyHomePage> {
     contentType = "loading";
     itemPageMap = {};
     updateItemList("all");
+    categoryList = dataManager.getCategories();
+    selectedCategoryList = [];
   }
 
   Future<void> updateItemPageMap(Item itemToFetch) async {
@@ -142,19 +146,44 @@ class _MyHomePageState extends State<MyHomePage> {
           shrinkWrap: true,
           children: [Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              focusNode: _focusNode,
-              decoration: InputDecoration(
-                hintText: "Search...",
-                prefix: Icon(Icons.search),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              onSubmitted: (value) {
-                setState(() {
-                  widgetItems = dataManager.filter([], value.split(' '));
-                  _focusNode.requestFocus();
-                });
-              },
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    focusNode: _focusNode,
+                    decoration: InputDecoration(
+                      hintText: "Search...",
+                      prefix: Icon(Icons.search),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                    onSubmitted: (value) {
+                      setState(() {
+                        widgetItems = dataManager.filter([], value.split(' '));
+                        _focusNode.requestFocus();
+                      });
+                    },
+                  ),
+                ),
+                PopupMenuButton(
+                  itemBuilder: (context) {
+                    return categoryList.map((category) => CheckedPopupMenuItem(
+                        value: category,
+                        checked: selectedCategoryList.contains(category),
+                        child: Text(category),
+                        onTap: () {
+                          if(selectedCategoryList.contains(category)) { //TODO
+                            selectedCategoryList.add(category);
+                            print(categoryList);
+                            print(selectedCategoryList);
+                          } else {
+                            selectedCategoryList.remove(category);
+                          }
+                        },
+                      ),
+                    ).toList(); 
+                  },
+                )
+              ],
             ),
           ),
           ...itemsToWidgets(widgetItems),]
