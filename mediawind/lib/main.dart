@@ -70,10 +70,17 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void showFilterMenu(BuildContext context) {
+  void showFilterMenu(BuildContext context, TapDownDetails details, bool animate) {
+
     showMenu(
+      popUpAnimationStyle:  animate ? AnimationStyle() : AnimationStyle(duration: Duration()),
       context: context,
-      position: RelativeRect.fromLTRB(0.0, 0.0, 50.0, 50.0),
+      position: RelativeRect.fromLTRB(
+        details.globalPosition.dx,
+        details.globalPosition.dy,
+        0,
+        0,
+      ),
       items: categoryList.map((category) => PopupMenuItem(
           enabled: false,
           value: category,
@@ -88,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
               });
               Navigator.pop(context);
-              showFilterMenu(context);
+              showFilterMenu(context, details, false);
             },
             child: Row(
               children: [
@@ -200,9 +207,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   ),
                 ),
-                GestureDetector(
+                GestureDetector( //TODO
                   child: Icon(Icons.filter_list_outlined),
-                  onTap: () => showFilterMenu(context),
+                  onTapDown: (details) => showFilterMenu(context, details, true),
                 ),
               ],
             ),
