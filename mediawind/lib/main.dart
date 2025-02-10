@@ -70,6 +70,42 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void showFilterMenu(BuildContext context) {
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(0.0, 0.0, 50.0, 50.0),
+      items: categoryList.map((category) => PopupMenuItem(
+          enabled: false,
+          value: category,
+          //checked: selectedCategoryList.contains(category),
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                if (selectedCategoryList.contains(category)) {
+                  selectedCategoryList.remove(category);
+                } else {
+                  selectedCategoryList.add(category);
+                }
+              });
+              Navigator.pop(context);
+              showFilterMenu(context);
+            },
+            child: Row(
+              children: [
+                Icon(
+                  selectedCategoryList.contains(category) ? Icons.check_box : Icons.check_box_outline_blank,
+                  color: Colors.black,
+                ),
+                const SizedBox(width: 8),
+                Text(category, style: const TextStyle(color: Colors.black)),
+              ],
+            )
+          ),
+        ),
+      ).toList(),
+    );
+  }
+
   List<Widget> itemsToWidgets(List<Item> itemList) {
     return itemList.map((elt) {
       return SizedBox(
@@ -166,26 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 GestureDetector(
                   child: Icon(Icons.filter_list_outlined),
-                  onTap: () {
-                    showMenu(
-                      context: context,
-                      position: RelativeRect.fromLTRB(0.0, 0.0, 50.0, 50.0),
-                      items: categoryList.map((category) => PopupMenuItem(
-                          enabled: false,
-                          value: category,
-                          //checked: selectedCategoryList.contains(category),
-                          child: GestureDetector(
-                            child: Row(
-                              children: [
-                                Icon(Icons.check_box_outline_blank_outlined,),
-                                Text(category),
-                              ]
-                            )
-                          ),
-                        ),
-                      ).toList(),
-                    );
-                  }
+                  onTap: () => showFilterMenu(context),
                 ),
               ],
             ),
