@@ -165,20 +165,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 PopupMenuButton(
+                  onSelected: (String category) {
+                    setState(() {
+                      if(!selectedCategoryList.contains(category)) {
+                        selectedCategoryList.add(category);
+                      } else {
+                        selectedCategoryList.remove(category);
+                      }
+                    });
+                  },
                   itemBuilder: (context) {
                     return categoryList.map((category) => CheckedPopupMenuItem(
                         value: category,
                         checked: selectedCategoryList.contains(category),
                         child: Text(category),
-                        onTap: () {
-                          if(selectedCategoryList.contains(category)) { //TODO
-                            selectedCategoryList.add(category);
-                            print(categoryList);
-                            print(selectedCategoryList);
-                          } else {
-                            selectedCategoryList.remove(category);
-                          }
-                        },
                       ),
                     ).toList(); 
                   },
