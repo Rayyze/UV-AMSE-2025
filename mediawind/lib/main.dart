@@ -41,6 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final FocusNode _focusNode = FocusNode();
   List<String> categoryList = [];
   List<String> selectedCategoryList = [];
+  String keywords = "";
 
   @override
   void initState() {
@@ -70,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void showFilterMenu(BuildContext context, TapDownDetails details, bool animate) { //TODO fix gesture detector (tap on whole row)
+  void showFilterMenu(BuildContext context, TapDownDetails details, bool animate) {
 
     showMenu(
       popUpAnimationStyle:  animate ? AnimationStyle() : AnimationStyle(duration: Duration()),
@@ -84,7 +85,6 @@ class _MyHomePageState extends State<MyHomePage> {
       items: categoryList.map((category) => PopupMenuItem(
           enabled: false,
           value: category,
-          //checked: selectedCategoryList.contains(category),
           child: GestureDetector(
             onTap: () {
               setState(() {
@@ -93,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 } else {
                   selectedCategoryList.add(category);
                 }
+                widgetItems = dataManager.filter(selectedCategoryList, keywords.split(' '));
               });
               Navigator.pop(context);
               showFilterMenu(context, details, false);
@@ -104,7 +105,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Colors.black,
                 ),
                 const SizedBox(width: 8),
-                Text(category, style: const TextStyle(color: Colors.black)),
+                Expanded(
+                  child: Text(category, style: const TextStyle(color: Colors.black)),
+                ),
               ],
             )
           ),
@@ -156,7 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               maxLines: 1,
                             ),
                           ),
-                          Icon(Icons.star_outlined),
+                          Icon(elt.liked ? Icons.grade_outlined : Icons.star_outlined, color: elt.liked ? Colors.black : Colors.yellow,),
                         ],
                       ),
                       SizedBox(height: 5),
@@ -201,7 +204,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     onSubmitted: (value) {
                       setState(() {
-                        widgetItems = dataManager.filter(selectedCategoryList, value.split(' '));
+                        keywords = value;
+                        widgetItems = dataManager.filter(selectedCategoryList, keywords.split(' '));
                         _focusNode.requestFocus();
                       });
                     },

@@ -6,6 +6,7 @@ class DataManager {
   List<Item> items = [];
   Map<String, dynamic> itemPageMap = {};
   String baseUrl = "https://eldenring.fanapis.com/api/";
+  List<String> likedItems = [];
 
   DataManager();
 
@@ -59,7 +60,9 @@ List<String> getCategories(String type) {
             List elements = data['data'];
             count += elements.length;
             for(Map<String, dynamic> element in elements) {
-              items.add(Item.fromJson(element, url));
+              Item tempItem = Item.fromJson(element, url, false);
+              tempItem.liked = likedItems.contains(tempItem.id);
+              items.add(tempItem);
             }
             if (count >= (data['total'] ?? 0)) {
               hasMoreData = false;
@@ -79,8 +82,8 @@ List<String> getCategories(String type) {
     bool typeMatch = false;
     bool keywordMatch = false;
     for(Item item in items) {
-      typeMatch = false;
       keywordMatch = false;
+      typeMatch = false;
       for(String type in types) {
         if (item.type == type) {
           typeMatch = true;
