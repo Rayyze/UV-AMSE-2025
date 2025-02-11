@@ -1,14 +1,21 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:mediawind/item.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DataManager {
   List<Item> items = [];
+  String currentType = "";
   Map<String, dynamic> itemPageMap = {};
+
   String baseUrl = "https://eldenring.fanapis.com/api/";
   List<String> likedItems = [];
+  bool favoritesPulled = false;
 
-  DataManager();
+  DataManager() {
+    pullFavorites();
+  }
 
   Future<Map<String, dynamic>> getItemPageMap(Item itemToFetch) async {
     items = [];
@@ -25,26 +32,37 @@ class DataManager {
     return {};
   }
 
-List<String> getCategories(String type) {
-  Map<String, List<String>> categoryMap = {
-    'all': [
-      "creatures", "bosses", "ammos", "armors", "items", "shields", "weapons",
-      "ashes", "incantations", "sorceries", "spirits", "talismans", "locations",
-      "npcs", "classes"
-    ],
-    'creatures': ["creatures", "bosses"],
-    'equipments': ["ammos", "armors", "items", "shields", "weapons"],
-    'magic': ["ashes", "incantations", "sorceries", "spirits", "talismans"],
-    'locations': ["locations"],
-    'npcs': ["npcs"],
-    'classes': ["classes"]
-  };
+  List<String> getCategories(String type) {
+    Map<String, List<String>> categoryMap = {
+      'all': [
+        "creatures", "bosses", "ammos", "armors", "items", "shields", "weapons",
+        "ashes", "incantations", "sorceries", "spirits", "talismans", "locations",
+        "npcs", "classes"
+      ],
+      'creatures': ["creatures", "bosses"],
+      'equipments': ["ammos", "armors", "items", "shields", "weapons"],
+      'magic': ["ashes", "incantations", "sorceries", "spirits", "talismans"],
+      'locations': ["locations"],
+      'npcs': ["npcs"],
+      'classes': ["classes"]
+    };
 
-  return categoryMap[type] ?? [];
-}
-
+    return categoryMap[type] ?? [];
+  }
 
   Future<List<Item>> getItemList(String type) async {
+    if (currentType == type || type == "current") {
+      return items;
+    } else {
+      return await fetchItemList(type);
+    }
+  }
+
+  Future<List<Item>> fetchItemList(String type) async {
+    while(!favoritesPulled) {
+      await Future.delayed(Duration(milliseconds: 100));
+    }
+
     items = [];
     List<String> urls = getCategories(type);
 
@@ -99,5 +117,35 @@ List<String> getCategories(String type) {
       }
     }
     return filteredItems;
+  }
+
+  Future<void> pullFavorites() async { // TODO DartError: FormatException: SyntaxError: Unexpected end of JSON input
+    final prefs = await SharedPreferences.getInstance();
+    String content = prefs.getString('favorites') ?? "";
+    final data = jsonDecode(content) ?? <String, dynamic>{};
+    likedItems = data['data'];
+    favoritesPulled = true;
+  }
+
+  Future<void> pushFavorites() async {
+    final prefs = await SharedPreferences.getInstance();
+    var data = {'data': likedItems};
+    String content = jsonEncode(data);
+    await prefs.setString('jsonData', content);
+  }
+
+  void updateFavorites(String itemId) {
+    if (likedItems.contains(itemId)) {
+      likedItems.remove(itemId);
+    } else {
+      likedItems.add(itemId);
+    }
+    for (Item item in items) {
+      if (item.id == itemId) {
+        print(item.name);
+        item.liked = !item.liked;
+      }
+    }
+    pushFavorites();
   }
 }

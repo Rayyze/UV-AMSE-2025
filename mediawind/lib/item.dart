@@ -19,7 +19,7 @@ class Item {
   factory Item.fromJson(Map<String, dynamic> json, String type, bool liked) {
     return Item(
       id: json['id'] as String,
-      description: (json['description'] ?? "") as String,
+      description: (json['description'] ?? "No description") as String,
       name: json['name'] as String,
       image: (json['image'] ?? "../assets/default_image.jpg") as String,
       type: type,

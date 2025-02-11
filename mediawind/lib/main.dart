@@ -119,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Widget> itemsToWidgets(List<Item> itemList) {
     return itemList.map((elt) {
       return SizedBox(
-        height: 100,
+        height: 105,
         width: double.infinity,
         child: GestureDetector(
           onTap: () {
@@ -159,7 +159,13 @@ class _MyHomePageState extends State<MyHomePage> {
                               maxLines: 1,
                             ),
                           ),
-                          Icon(elt.liked ? Icons.grade_outlined : Icons.star_outlined, color: elt.liked ? Colors.black : Colors.yellow,),
+                          IconButton(
+                            onPressed:() {
+                              dataManager.updateFavorites(elt.id);
+                              updateItemList("current");
+                            },
+                            icon: Icon(elt.liked ? Icons.favorite_outlined : Icons.favorite_border_outlined, color: elt.liked ? Colors.red : Colors.black,),
+                          ),
                         ],
                       ),
                       SizedBox(height: 5),
