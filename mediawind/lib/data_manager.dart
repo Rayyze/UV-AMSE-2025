@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:mediawind/item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,14 +17,15 @@ class DataManager {
   }
 
   Future<Map<String, dynamic>> getItemPageMap(Item itemToFetch) async {
-    items = [];
     String url = itemToFetch.type;
     String id = itemToFetch.id;
     final response = await http.get(Uri.parse('$baseUrl$url/$id'));
     if(response.statusCode == 200) {
       final data = jsonDecode(response.body) ?? <String, dynamic>{};
-      itemPageMap = data;
-      return data;
+      itemPageMap = data["data"];
+      itemPageMap["image"] = itemPageMap["image"] ?? "../assets/default_image.jpg";
+      itemPageMap["description"] = itemPageMap["description"] ?? "No description";
+      return itemPageMap;
     }
 
     itemPageMap = {};
@@ -54,8 +54,22 @@ class DataManager {
     if (currentType == type || type == "current") {
       return items;
     } else {
-      return await fetchItemList(type);
+      if (type == "liked") {
+        return getLikedIn(await fetchItemList("all"));
+      } else {
+        return await fetchItemList(type);
+      }
     }
+  }
+
+  List<Item> getLikedIn(List<Item> input) {
+    List<Item> output = [];
+    for (Item item in input) {
+      if (item.liked) {
+        output.add(item);
+      }
+    }
+    return output;
   }
 
   Future<List<Item>> fetchItemList(String type) async {
@@ -92,6 +106,7 @@ class DataManager {
       }
     }
     
+    currentType = type;
     return items;
   }
 
@@ -119,11 +134,11 @@ class DataManager {
     return filteredItems;
   }
 
-  Future<void> pullFavorites() async { // TODO DartError: FormatException: SyntaxError: Unexpected end of JSON input
+  Future<void> pullFavorites() async {
     final prefs = await SharedPreferences.getInstance();
-    String content = prefs.getString('favorites') ?? "";
-    final data = jsonDecode(content) ?? <String, dynamic>{};
-    likedItems = data['data'];
+    String content = prefs.getString('favorites') ?? '{"data": []}';
+    final data = jsonDecode(content);
+    likedItems = data['data'].cast<String>();
     favoritesPulled = true;
   }
 
@@ -131,7 +146,7 @@ class DataManager {
     final prefs = await SharedPreferences.getInstance();
     var data = {'data': likedItems};
     String content = jsonEncode(data);
-    await prefs.setString('jsonData', content);
+    await prefs.setString('favorites', content);
   }
 
   void updateFavorites(String itemId) {
@@ -142,7 +157,6 @@ class DataManager {
     }
     for (Item item in items) {
       if (item.id == itemId) {
-        print(item.name);
         item.liked = !item.liked;
       }
     }

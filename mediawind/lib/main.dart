@@ -5,6 +5,7 @@ import 'package:mediawind/item.dart';
 DataManager dataManager = DataManager();
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -35,6 +36,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String title = "";
+  String previousTitle = "";
   List<Item> widgetItems = [];
   String contentType = "";
   Map<String, dynamic> itemPageMap = {};
@@ -60,6 +62,8 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       itemPageMap = data;
       contentType = "page";
+      previousTitle = title;
+      title = itemPageMap["name"];
     });
   }
 
@@ -124,6 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: GestureDetector(
           onTap: () {
             setState(() {
+
               updateItemPageMap(elt);
               contentType = "loading";
             });
@@ -186,7 +191,27 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget itemPageMapToWidget() {
-    return Text("Work in progress");
+    return Column(
+      children: [
+        Row(
+          children: [
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  contentType = "list";
+                  title = previousTitle;
+                });
+              },
+              icon: Icon(Icons.arrow_back_outlined),
+            ),
+            Text(previousTitle),
+          ],
+        ),
+        Image.network(itemPageMap["image"] ),
+        SizedBox(height: 30),
+        Text(itemPageMap["description"]),
+      ],
+    );
   }
 
   Widget updateMainWidget() {
@@ -260,6 +285,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   setState(() {
                     contentType = "loading";
                     title = "GraceWind";
+                  });
+                  Navigator.pop(context);
+                },
+              )
+            ),
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+              child: ListTile(
+                leading: Icon(Icons.favorite_outlined),
+                title: Text("Favorites"),
+                onTap: (){
+                  updateItemList("liked");
+                  setState(() {
+                    contentType = "loading";
+                    title = "Favorites";
                   });
                   Navigator.pop(context);
                 },
