@@ -14,10 +14,50 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const Color lightGrey =Color.fromARGB(255, 29, 29, 29);
+    const Color darkGrey =Color.fromARGB(255, 20, 20, 20);
     return MaterialApp(
       title: 'GraceWind',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
+        colorScheme: ColorScheme.dark(
+          primary: lightGrey,
+          onPrimary: darkGrey,
+          
+          secondary: Colors.amber,
+          onSecondary: Colors.black,
+          
+          surface: lightGrey,
+          onSurface: Colors.white,
+          
+          brightness: Brightness.dark,
+        ),
+        cardTheme: CardTheme(
+          color: darkGrey,
+          shadowColor: Colors.black,
+          elevation: 4,
+        ),
+        iconTheme: IconThemeData(
+          color: Colors.amber,
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          prefixIconColor: Colors.amber,
+          
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.amber, width: 2),
+          ),
+        ),
+        appBarTheme: AppBarTheme(
+          titleTextStyle: TextStyle(
+            color: Colors.amber,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+          iconTheme: IconThemeData(
+            color: Colors.amber,
+          ),
+          backgroundColor: darkGrey,
+        ),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'GraceWind'),
@@ -68,7 +108,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> updateItemList(String type) async {
-    List<Item> items = await dataManager.getItemList(type);
+    await dataManager.getItemList(type);
+    List<Item> items = dataManager.filter(selectedCategoryList, keywords.split(' '));
     setState(() {
       widgetItems = items;
       contentType = "list";
@@ -106,11 +147,11 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 Icon(
                   selectedCategoryList.contains(category) ? Icons.check_box : Icons.check_box_outline_blank,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(category, style: const TextStyle(color: Colors.black)),
+                  child: Text(category, style: const TextStyle(color: Colors.white)),
                 ),
               ],
             )
@@ -159,7 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           Expanded(
                             child: Text(
                               elt.name,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.amber),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),
@@ -169,7 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               dataManager.updateFavorites(elt.id);
                               updateItemList("current");
                             },
-                            icon: Icon(elt.liked ? Icons.favorite_outlined : Icons.favorite_border_outlined, color: elt.liked ? Colors.red : Colors.black,),
+                            icon: Icon(elt.liked ? Icons.favorite_outlined : Icons.favorite_border_outlined, color: elt.liked ? Colors.red : Colors.amber,),
                           ),
                         ],
                       ),
@@ -217,7 +258,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget updateMainWidget() {
     switch (contentType) {
       case 'loading':
-        return Center(child: CircularProgressIndicator());
+        return Center(child: CircularProgressIndicator(color: Colors.amber));
       case 'list':
         return ListView(
           shrinkWrap: true,
@@ -227,6 +268,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 Expanded(
                   child: TextField(
+                    controller: TextEditingController(text: keywords),
                     focusNode: _focusNode,
                     decoration: InputDecoration(
                       hintText: "Search...",
@@ -258,6 +300,27 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Widget getMenuCard(String title, String itemListType, IconData icon) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+      child: ListTile(
+        leading: Icon(icon, color: Colors.amber,),
+        title: Text(title, style: TextStyle(color: Colors.amber),),
+        onTap: (){
+          updateItemList(itemListType);
+          setState(() {
+            contentType = "loading";
+            title = title == "Home" ? "GraceWind" : title;
+            keywords = "";
+            categoryList = dataManager.getCategories(itemListType);
+            selectedCategoryList = dataManager.getCategories(itemListType);
+          });
+          Navigator.pop(context);
+        },
+      )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -275,131 +338,19 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               child: Icon(Icons.whatshot, size: 100,)
             ),
+            getMenuCard("Home", "all", Icons.home),
+            getMenuCard("Favorites", "liked", Icons.favorite_outlined),
+            getMenuCard("Creatures", "creatures", Icons.pets),
+            getMenuCard("Equipments", "equipments", Icons.shield),
+            getMenuCard("Magic", "magic", Icons.auto_awesome),
+            getMenuCard("Locations", "locations", Icons.place),
+            getMenuCard("NPCs", "npcs", Icons.people),
+            getMenuCard("Classes", "classes", Icons.workspace_premium),
             Card(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
               child: ListTile(
-                leading: Icon(Icons.home),
-                title: Text("Home"),
-                onTap: (){
-                  updateItemList("all");
-                  setState(() {
-                    contentType = "loading";
-                    title = "GraceWind";
-                  });
-                  Navigator.pop(context);
-                },
-              )
-            ),
-            Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-              child: ListTile(
-                leading: Icon(Icons.favorite_outlined),
-                title: Text("Favorites"),
-                onTap: (){
-                  updateItemList("liked");
-                  setState(() {
-                    contentType = "loading";
-                    title = "Favorites";
-                  });
-                  Navigator.pop(context);
-                },
-              )
-            ),
-            Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-              child: ListTile(
-                leading: Icon(Icons.pets),
-                title: Text("Creatures"),
-                onTap: (){
-                  updateItemList("creatures");
-                  setState(() {
-                    contentType = "loading";
-                    title = "Creatures";
-                  });
-                  Navigator.pop(context);
-                },
-              )
-            ),
-            Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-              child: ListTile(
-                leading: Icon(Icons.shield),
-                title: Text("Equipments"),
-                onTap: (){
-                  updateItemList("equipments");
-                  setState(() {
-                    contentType = "loading";
-                    title = "Equipments";
-                  });
-                  Navigator.pop(context);
-                },
-              )
-            ),
-            Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-              child: ListTile(
-                leading: Icon(Icons.auto_awesome),
-                title: Text("Magic"),
-                onTap: (){
-                  updateItemList("magic");
-                  setState(() {
-                    contentType = "loading";
-                    title = "Magic";
-                  });
-                  Navigator.pop(context);
-                },
-              )
-            ),
-            Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-              child: ListTile(
-                leading: Icon(Icons.place),
-                title: Text("Locations"),
-                onTap: (){
-                  updateItemList("locations");
-                  setState(() {
-                    contentType = "loading";
-                    title = "Locations";
-                  });
-                  Navigator.pop(context);
-                },
-              )
-            ),
-            Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-              child: ListTile(
-                leading: Icon(Icons.people),
-                title: Text("NPCs"),
-                onTap: (){
-                  updateItemList("npcs");
-                  setState(() {
-                    contentType = "loading";
-                    title = "NPCs";
-                  });
-                  Navigator.pop(context);
-                },
-              )
-            ),
-            Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-              child: ListTile(
-                leading: Icon(Icons.workspace_premium),
-                title: Text("Classes"),
-                onTap: (){
-                  updateItemList("classes");
-                  setState(() {
-                    contentType = "loading";
-                    title = "Classes";
-                  });
-                  Navigator.pop(context);
-                },
-              )
-            ),
-            Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-              child: ListTile(
-                leading: Icon(Icons.help),
-                title: Text("About"),
+                leading: Icon(Icons.help, color: Colors.amber,),
+                title: Text("About", style: TextStyle(color: Colors.amber),),
                 onTap: (){
                   setState(() {
                     contentType = "about";

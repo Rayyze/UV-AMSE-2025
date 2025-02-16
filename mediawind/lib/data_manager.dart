@@ -39,6 +39,11 @@ class DataManager {
         "ashes", "incantations", "sorceries", "spirits", "talismans", "locations",
         "npcs", "classes"
       ],
+      'liked': [
+        "creatures", "bosses", "ammos", "armors", "items", "shields", "weapons",
+        "ashes", "incantations", "sorceries", "spirits", "talismans", "locations",
+        "npcs", "classes"
+      ],
       'creatures': ["creatures", "bosses"],
       'equipments': ["ammos", "armors", "items", "shields", "weapons"],
       'magic': ["ashes", "incantations", "sorceries", "spirits", "talismans"],
@@ -51,11 +56,12 @@ class DataManager {
   }
 
   Future<List<Item>> getItemList(String type) async {
-    if (currentType == type || type == "current") {
+    if (type != "liked" && (currentType == type || type == "current")) {
       return items;
     } else {
       if (type == "liked") {
-        return getLikedIn(await fetchItemList("all"));
+        items = getLikedIn(await fetchItemList("liked"));
+        return items;
       } else {
         return await fetchItemList(type);
       }
