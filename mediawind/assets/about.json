@@ -1,0 +1,15 @@
+{
+    "title" : "About This App",
+
+    "Welcome to GraceWind!" : "This app is designed as part of a school project to fetch and display data from an external API, providing users with detailed information about the Elden Ring universe. Features",
+
+    "Features" : "Browse Information – Search and filter data.\nFavorite Items – Save and manage your favorite entries.\nLive Data – Always up-to-date with the latest API content.",
+    
+    "How It Works" : "The app retrieves data from the Elden Ring API and organizes it in a user-friendly format. You can search, browse, and favorite different items for quick access later. Why This Project?",
+
+    "This project was created to demonstrate skills in:" : "API integration \nUI/UX design\nState management \nFlutter app development\n",
+
+    "Credits & Resources" : "Data Source: eldenring.fanapis.com\nDeveloped by: Léo Chouippe\nSchool: IMT Nord Europe\nTeacher: Luc Fabresse",
+
+    "conclusion" : "Thank you for using GraceWind!"
+}

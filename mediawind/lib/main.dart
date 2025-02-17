@@ -235,6 +235,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
+  String splitCamelCase(String text) {
+  return text.replaceAllMapped(RegExp(r'([a-z])([A-Z])'), (match) {
+    return "${match.group(1)} ${match.group(2)}";
+  });
+}
+
   Widget itemFieldToWidget(MapEntry<String, dynamic> entry) {
     String key = entry.key;
     dynamic value = entry.value;
@@ -248,7 +254,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (value is Map) {
       valueWidget = Column(
         children: value.entries.map((valueEntry) {
-          String valueKey = valueEntry.key;
+          String valueKey = valueEntry.key.toString();
           String valueValue = valueEntry.value.toString();
           return Text("$valueKey : $valueValue");
         }).toList()
@@ -256,16 +262,21 @@ class _MyHomePageState extends State<MyHomePage> {
     } else if (value is List) {
       valueWidget = Column(
         children: value.map((elt) {
+          if (elt is Map) {
+            String name = elt.values.first.toString();
+            String amount = elt.values.last.toString();
+            return Text("$name : $amount");
+          }
           return Text(elt.toString());
         }).toList(),
       );
     } else {
-      valueWidget = Text(value);
+      valueWidget = Text(value.toString());
     }
 
     return Column(
       children: [
-        Text(key.toUpperCase(), style: TextStyle(color: Colors.amber)),
+        Text(splitCamelCase(key).toUpperCase(), style: TextStyle(color: Colors.amber)),
         SizedBox(height: 10),
         valueWidget,
         SizedBox(height: 20),
