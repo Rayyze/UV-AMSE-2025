@@ -235,6 +235,44 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
+  Widget itemFieldToWidget(MapEntry<String, dynamic> entry) {
+    String key = entry.key;
+    dynamic value = entry.value;
+
+    if (value == null || key == "name" || key == "image" || key == "id") {
+      return SizedBox.shrink();
+    }
+
+    Widget valueWidget = Text("");
+
+    if (value is Map) {
+      valueWidget = Column(
+        children: value.entries.map((valueEntry) {
+          String valueKey = valueEntry.key;
+          String valueValue = valueEntry.value.toString();
+          return Text("$valueKey : $valueValue");
+        }).toList()
+      );
+    } else if (value is List) {
+      valueWidget = Column(
+        children: value.map((elt) {
+          return Text(elt.toString());
+        }).toList(),
+      );
+    } else {
+      valueWidget = Text(value);
+    }
+
+    return Column(
+      children: [
+        Text(key.toUpperCase(), style: TextStyle(color: Colors.amber)),
+        SizedBox(height: 10),
+        valueWidget,
+        SizedBox(height: 20),
+      ],
+    );
+  }
+
   Widget itemPageMapToWidget() {
     return Padding(
       padding: EdgeInsets.all(8.0),
@@ -254,40 +292,16 @@ class _MyHomePageState extends State<MyHomePage> {
               Text(previousTitle),
             ],
           ),
-          Image.network(itemPageMap["image"] ),
-          SizedBox(height: 30),
-          ...itemPageMap.entries.map((entry) {
-            String key = entry.key;
-            dynamic value = entry.value;
-
-            if (key == "name" || key == "image" || key == "id") {
-              return SizedBox.shrink();
-            }
-
-            if (value != null) {
-              Widget valueWidget = Text("");
-              if (value is Map) {
-                valueWidget = Column(
-                  children: value.entries.map((valueEntry) {
-                    String valueKey = valueEntry.key;
-                    String valueValue = valueEntry.value.toString();
-                    return Text("$valueKey : $valueValue");
-                  }).toList()
-                );
-              } else {
-                valueWidget = Text(value);
-              }
-              return Column(
-                children: [
-                  Text(key.toUpperCase(), style: TextStyle(color: Colors.amber)),
-                  SizedBox(height: 30),
-                  valueWidget,
-                ],
-              );
-            }
-            return SizedBox.shrink();
-
-          })
+          Expanded(
+            child: ListView(
+              children: [
+                Image.network(itemPageMap["image"] ),
+                ...itemPageMap.entries.map((entry) {
+                  return itemFieldToWidget(entry);
+                }),
+              ],
+            )
+          )
         ],
       )
     );
