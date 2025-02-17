@@ -84,6 +84,10 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> categoryList = [];
   List<String> selectedCategoryList = [];
   String keywords = "";
+  Widget mainWidgetIcon = SizedBox(
+    height: 40,
+    child: Image.asset("../assets/icon.png", fit: BoxFit.scaleDown),
+  );
 
   @override
   void initState() {
@@ -232,26 +236,60 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget itemPageMapToWidget() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  contentType = "list";
-                  title = previousTitle;
-                });
-              },
-              icon: Icon(Icons.arrow_back_outlined),
-            ),
-            Text(previousTitle),
-          ],
-        ),
-        Image.network(itemPageMap["image"] ),
-        SizedBox(height: 30),
-        Text(itemPageMap["description"]),
-      ],
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    contentType = "list";
+                    title = previousTitle;
+                  });
+                },
+                icon: Icon(Icons.arrow_back_outlined),
+              ),
+              Text(previousTitle),
+            ],
+          ),
+          Image.network(itemPageMap["image"] ),
+          SizedBox(height: 30),
+          ...itemPageMap.entries.map((entry) {
+            String key = entry.key;
+            dynamic value = entry.value;
+
+            if (key == "name" || key == "image" || key == "id") {
+              return SizedBox.shrink();
+            }
+
+            if (value != null) {
+              Widget valueWidget = Text("");
+              if (value is Map) {
+                valueWidget = Column(
+                  children: value.entries.map((valueEntry) {
+                    String valueKey = valueEntry.key;
+                    String valueValue = valueEntry.value.toString();
+                    return Text("$valueKey : $valueValue");
+                  }).toList()
+                );
+              } else {
+                valueWidget = Text(value);
+              }
+              return Column(
+                children: [
+                  Text(key.toUpperCase(), style: TextStyle(color: Colors.amber)),
+                  SizedBox(height: 30),
+                  valueWidget,
+                ],
+              );
+            }
+            return SizedBox.shrink();
+
+          })
+        ],
+      )
     );
   }
 
@@ -300,17 +338,21 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Widget getMenuCard(String title, String itemListType, IconData icon) {
+  Widget getMenuCard(String pageTitle, String itemListType, IconData iconData) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       child: ListTile(
-        leading: Icon(icon, color: Colors.amber,),
-        title: Text(title, style: TextStyle(color: Colors.amber),),
+        leading: Icon(iconData, color: Colors.amber,),
+        title: Text(pageTitle, style: TextStyle(color: Colors.amber),),
         onTap: (){
           updateItemList(itemListType);
           setState(() {
             contentType = "loading";
-            title = title == "Home" ? "GraceWind" : title;
+            mainWidgetIcon = (pageTitle == "Home") ? SizedBox(
+                height: 40,
+                child: Image.asset("../assets/icon.png", fit: BoxFit.scaleDown),
+              ) : Icon(iconData);
+            title = (pageTitle == "Home") ? "GraceWind" : pageTitle;
             keywords = "";
             categoryList = dataManager.getCategories(itemListType);
             selectedCategoryList = dataManager.getCategories(itemListType);
@@ -326,17 +368,35 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(title),
+        title: Row(
+          children: [
+            mainWidgetIcon,
+            SizedBox(width: 20.0),
+            Text(title),
+          ],
+        ) 
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary
-              ),
-              child: Icon(Icons.whatshot, size: 100,)
+            SizedBox(
+              height: 250,
+              child: DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary
+                ),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 150,
+                      child:Image.asset("../assets/icon.png"),
+                    ),
+                    SizedBox(height: 10),
+                    Text("GraceWind", style: TextStyle(color: Colors.amber, fontSize: 30)),
+                  ],
+                ) 
+              )
             ),
             getMenuCard("Home", "all", Icons.home),
             getMenuCard("Favorites", "liked", Icons.favorite_outlined),
@@ -354,6 +414,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onTap: (){
                   setState(() {
                     contentType = "about";
+                    mainWidgetIcon = Icon(Icons.help, color: Colors.amber);
                     title = "About";
                   });
                   Navigator.pop(context);
