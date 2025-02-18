@@ -397,7 +397,13 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             mainWidgetIcon,
             SizedBox(width: 20.0),
-            Text(title),
+            Expanded(
+              child: Text(
+                title,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
           ],
         ) 
       ),
