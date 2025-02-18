@@ -24,7 +24,7 @@ class DataManager {
     if(response.statusCode == 200) {
       final data = jsonDecode(response.body) ?? <String, dynamic>{};
       itemPageMap = data["data"];
-      itemPageMap["image"] = itemPageMap["image"] ?? "../assets/default_image.jpg";
+      itemPageMap["image"] = itemPageMap["image"] ?? "assets/default_image.jpg";
       itemPageMap["description"] = itemPageMap["description"] ?? "No description";
       return itemPageMap;
     }
