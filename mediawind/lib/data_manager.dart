@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:mediawind/item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -167,5 +168,10 @@ class DataManager {
       }
     }
     pushFavorites();
+  }
+
+  Future<Map<String, dynamic>> getAboutInfo() async {
+  String jsonString = await rootBundle.loadString('assets/about.json');
+  return jsonDecode(jsonString);
   }
 }

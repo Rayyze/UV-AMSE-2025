@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'GraceWind',
       theme: ThemeData(
+        dividerTheme: const DividerThemeData(color: Colors.transparent),
         colorScheme: ColorScheme.dark(
           primary: lightGrey,
           onPrimary: darkGrey,
@@ -84,9 +85,10 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> categoryList = [];
   List<String> selectedCategoryList = [];
   String keywords = "";
+  Map<String, dynamic> aboutMap = {};
   Widget mainWidgetIcon = SizedBox(
     height: 40,
-    child: Image.asset("../assets/icon.png", fit: BoxFit.scaleDown),
+    child: Image.asset("assets/icon.png", fit: BoxFit.scaleDown),
   );
 
   @override
@@ -318,6 +320,13 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Future<void> updateAboutInfo() async {
+    aboutMap = await dataManager.getAboutInfo();
+    setState(() {
+      contentType = "about";
+    });
+  }
+
   Widget updateMainWidget() {
     switch (contentType) {
       case 'loading':
@@ -358,6 +367,37 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       case 'page':
         return itemPageMapToWidget();
+      case 'about':
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: aboutMap.entries.map((entry) {
+              String key = entry.key;
+              String value = entry.value.toString();
+              
+              if (key == "title" || key == "conclusion") {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    (key == "title") ? Text(value, style: TextStyle(color: Colors.amber, fontSize: 30),) : Text(value),
+                    SizedBox(height: 10),
+                  ],
+                );
+              } else {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(key, style: TextStyle(color: Colors.amber, fontSize: 20)),
+                    SizedBox(height: 8),
+                    Text(value),
+                    SizedBox(height: 10),
+                  ],
+                );
+              }
+            }).toList(),
+          ),
+        );
       default:
         return Icon(Icons.dangerous);
     }
@@ -375,7 +415,7 @@ class _MyHomePageState extends State<MyHomePage> {
             contentType = "loading";
             mainWidgetIcon = (pageTitle == "Home") ? SizedBox(
                 height: 40,
-                child: Image.asset("../assets/icon.png", fit: BoxFit.scaleDown),
+                child: Image.asset("assets/icon.png", fit: BoxFit.scaleDown),
               ) : Icon(iconData);
             title = (pageTitle == "Home") ? "GraceWind" : pageTitle;
             keywords = "";
@@ -421,10 +461,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: [
                     SizedBox(
                       height: 150,
-                      child:Image.asset("../assets/icon.png"),
+                      child:Image.asset("assets/icon.png"),
                     ),
                     SizedBox(height: 10),
                     Text("GraceWind", style: TextStyle(color: Colors.amber, fontSize: 30)),
+                    SizedBox(height: 10),
                   ],
                 ) 
               )
@@ -444,7 +485,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 title: Text("About", style: TextStyle(color: Colors.amber),),
                 onTap: (){
                   setState(() {
-                    contentType = "about";
+                    updateAboutInfo();
+                    contentType = "loading";
                     mainWidgetIcon = Icon(Icons.help, color: Colors.amber);
                     title = "About";
                   });
