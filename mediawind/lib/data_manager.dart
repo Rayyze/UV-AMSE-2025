@@ -17,6 +17,10 @@ class DataManager {
     pullFavorites();
   }
 
+  bool isNetworkUrl(String path) {
+    return Uri.tryParse(path)?.hasAbsolutePath ?? false;
+  }
+
   Future<Map<String, dynamic>> getItemPageMap(Item itemToFetch) async {
     String url = itemToFetch.type;
     String id = itemToFetch.id;

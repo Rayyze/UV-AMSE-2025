@@ -200,7 +200,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: SizedBox(
                     width: 120,
                     height: double.infinity,
-                    child: Image.network(
+                    child: dataManager.isNetworkUrl(elt.image) ? Image.network(
+                      elt.image,
+                      fit: BoxFit.cover,
+                    ) : Image.asset(
                       elt.image,
                       fit: BoxFit.cover,
                     ),
@@ -319,7 +322,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Expanded(
             child: ListView(
               children: [
-                Image.network(itemPageMap["image"] ),
+                dataManager.isNetworkUrl(itemPageMap["image"]) ? Image.network(itemPageMap["image"]) : Image.asset(itemPageMap["image"]),
                 ...itemPageMap.entries.map((entry) {
                   return itemFieldToWidget(entry);
                 }),
