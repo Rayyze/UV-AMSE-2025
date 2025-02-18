@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mediawind/data_manager.dart';
 import 'package:mediawind/item.dart';
 
@@ -6,6 +7,16 @@ DataManager dataManager = DataManager();
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      systemNavigationBarColor: Color.fromARGB(255, 20, 20, 20),
+      systemNavigationBarIconBrightness: Brightness.light,
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    ),
+  );
+  
   runApp(const MyApp());
 }
 
@@ -368,7 +379,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 'page':
         return itemPageMapToWidget();
       case 'about':
-        return Padding(
+        return SingleChildScrollView(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
