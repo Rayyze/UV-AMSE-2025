@@ -21,7 +21,7 @@ class Item {
       id: json['id'] as String,
       description: (json['description'] ?? "No description") as String,
       name: json['name'] as String,
-      image: (json['image'] ?? "../assets/default_image.jpg") as String,
+      image: (json['image'] ?? "assets/default_image.jpg") as String,
       type: type,
       liked: liked,
     );

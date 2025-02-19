@@ -18,7 +18,7 @@ class DataManager {
   }
 
   bool isNetworkUrl(String path) {
-    return Uri.tryParse(path)?.hasAbsolutePath ?? false;
+    return path.startsWith('http');
   }
 
   Future<Map<String, dynamic>> getItemPageMap(Item itemToFetch) async {
