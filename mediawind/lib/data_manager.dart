@@ -21,7 +21,10 @@ class DataManager {
     return path.startsWith('http');
   }
 
-  Future<Map<String, dynamic>> getItemPageMap(Item itemToFetch) async {
+  Future<Map<String, dynamic>> getItemPageMap(Item? itemToFetch) async {
+    if (itemToFetch == null || itemPageMap["liked"] == itemToFetch.id) {
+      return itemPageMap;
+    }
     String url = itemToFetch.type;
     String id = itemToFetch.id;
     final response = await http.get(Uri.parse('$baseUrl$url/$id'));
@@ -30,6 +33,7 @@ class DataManager {
       itemPageMap = data["data"];
       itemPageMap["image"] = itemPageMap["image"] ?? "assets/default_image.jpg";
       itemPageMap["description"] = itemPageMap["description"] ?? "No description";
+      itemPageMap["liked"] = itemToFetch.liked;
       return itemPageMap;
     }
 
@@ -170,6 +174,9 @@ class DataManager {
       if (item.id == itemId) {
         item.liked = !item.liked;
       }
+    }
+    if (itemPageMap["id"] == itemId) {
+      itemPageMap["liked"] = !itemPageMap["liked"];
     }
     pushFavorites();
   }

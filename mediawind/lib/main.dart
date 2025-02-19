@@ -114,12 +114,12 @@ class _MyHomePageState extends State<MyHomePage> {
     selectedCategoryList = dataManager.getCategories("all");
   }
 
-  Future<void> updateItemPageMap(Item itemToFetch) async {
+  Future<void> updateItemPageMap(Item? itemToFetch, String previousTitleValue) async {
     Map<String, dynamic> data = await dataManager.getItemPageMap(itemToFetch);
     setState(() {
       itemPageMap = data;
       contentType = "page";
-      previousTitle = title;
+      previousTitle = previousTitleValue;
       title = itemPageMap["name"];
     });
   }
@@ -187,7 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
           onTap: () {
             setState(() {
 
-              updateItemPageMap(elt);
+              updateItemPageMap(elt, title);
               contentType = "loading";
             });
           },
@@ -261,7 +261,7 @@ class _MyHomePageState extends State<MyHomePage> {
     String key = entry.key;
     dynamic value = entry.value;
 
-    if (value == null || key == "name" || key == "image" || key == "id") {
+    if (value == null || key == "name" || key == "image" || key == "id" || key == "liked") {
       return SizedBox.shrink();
     }
 
@@ -317,6 +317,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: Icon(Icons.arrow_back_outlined),
               ),
               Text(previousTitle),
+              Spacer(),
+              IconButton(
+                onPressed:() {
+                  dataManager.updateFavorites(itemPageMap["id"]);
+                  setState(() {
+                    contentType = "page";
+                    updateItemPageMap(null, previousTitle);
+                  });
+                },
+                icon: Icon(itemPageMap["liked"] ? Icons.favorite_outlined : Icons.favorite_border_outlined, color: itemPageMap["liked"] ? Colors.red : Colors.amber,),
+              ),
             ],
           ),
           Expanded(
