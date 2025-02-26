@@ -118,7 +118,7 @@ class _Ex4State extends State<Ex4> {
     fit: BoxFit.scaleDown,
   );
 
-    Widget croppedImageTile() {
+  Widget croppedImageTile() {
     return FittedBox(
       fit: BoxFit.fill,
       child: ClipRect(
@@ -204,6 +204,41 @@ class Ex5 extends StatefulWidget {
 }
 
 class _Ex5State extends State<Ex5> {
+  static const int imgSize = 1080;
+  Image img = Image.network(
+    "https://picsum.photos/$imgSize?random=${Random().nextInt(10000)}",
+    fit: BoxFit.scaleDown,
+  );
+  int size = 3;
+
+  Widget croppedImageTile(double widthFactor, double heightFactor, double alignX, double alignY) {
+    return FittedBox(
+      fit: BoxFit.fill,
+      child: ClipRect(
+        child: Align(
+          alignment: Alignment(alignX, alignY),
+          widthFactor: widthFactor,
+          heightFactor: heightFactor,
+          child: img
+        ),
+      ),
+    );
+  }
+
+  List<Widget> getTileList() {
+    final double tileRatio = 1/size;
+    List<Widget> tiles = [];
+    for (int i=0; i<size; i++) {
+      for (int j=0; j<size; j++) {
+        double alignY = (i / (size - 1)) * 2 - 1;
+        double alignX = (j / (size - 1)) * 2 - 1;
+        
+        tiles.add(croppedImageTile(tileRatio, tileRatio, alignX, alignY));
+      }
+    }
+    return tiles;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -214,46 +249,34 @@ class _Ex5State extends State<Ex5> {
           }, 
           icon: Icon(Icons.arrow_back_ios_rounded)),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Exercice 1"),
+        title: Text("Exercice 5"),
       ),
-      body: GridView.count(
-        primary: false,
-        padding: const EdgeInsets.all(20),
-        crossAxisSpacing: 3,
-        mainAxisSpacing: 3,
-        crossAxisCount: 3,
+      body: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            color: Colors.teal[100],
-            child: const Text("1"),
+          Expanded(
+            child: GridView.count(
+              primary: false,
+              padding: const EdgeInsets.all(20),
+              crossAxisSpacing: 2,
+              mainAxisSpacing: 2,
+              crossAxisCount: size,
+              children: getTileList(),
+            ),
           ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            color: Colors.teal[200],
-            child: const Text("2"),
+          Text("Size :"),
+          Slider(
+            value: size as double,
+            max: 10,
+            min: 2,
+            divisions: 8,
+            onChanged: (double value) {
+              setState(() {
+                size = value as int;
+              });
+            },
           ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            color: Colors.teal[300],
-            child: const Text("3"),
-          ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            color: Colors.teal[400],
-            child: const Text("4"),
-          ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            color: Colors.teal[500],
-            child: const Text("5"),
-          ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            color: Colors.teal[600],
-            child: const Text("6"),
-          ),
-        ],
+          SizedBox(height: 100),
+        ]
       )
     );
   }
