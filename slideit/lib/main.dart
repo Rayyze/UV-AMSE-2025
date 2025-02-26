@@ -65,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
             getMenuCard("Ex2", "Resize/rotate/scale image", () => Ex2()),
             getMenuCard("Ex4", "Crop image", () => Ex4()),
             getMenuCard("Ex5", "Grid view of an image", () => Ex5()),
+            getMenuCard("Ex6", "Grid view with tile swap", () => Ex6()),
           ],
         ),
       )

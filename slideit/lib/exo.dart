@@ -281,3 +281,117 @@ class _Ex5State extends State<Ex5> {
     );
   }
 }
+
+
+//EXO 6
+class Tile {
+  Color color = Colors.grey;
+  bool empty = false;
+  int x = 0;
+  int y = 0;
+
+  Tile(this.x, this.y, this.empty) {
+    if (empty) {
+      color = Colors.white;
+    }
+  }
+}
+
+class Ex6 extends StatefulWidget {
+  const Ex6({super.key});
+
+  @override
+  State<Ex6> createState() => _Ex6State();
+}
+
+class _Ex6State extends State<Ex6> {
+  int size = 3;
+  int emptyIndex = -1;
+  List<Widget> widgets = [];
+  List<Tile> tiles = [];
+
+  @override
+  void initState() {
+    super.initState();
+    tiles = getTileList();
+    updateWidgetList();
+  }
+
+  List<Tile> getTileList() {
+    List<Tile> result = [];
+    for (int i=0; i<size; i++) {
+      for (int j=0; j<size; j++) {
+        result.add(Tile(i, j, false));
+      }
+    }
+    emptyIndex = Random().nextInt(size*size);
+    result[emptyIndex] = Tile(result[emptyIndex].x, result[emptyIndex].y, true);
+    return result;
+  }
+
+  void swapTiles(int index) {
+    Tile temp = tiles[emptyIndex];
+    tiles[emptyIndex] = tiles[index];
+    tiles[index] = temp;
+    emptyIndex = index;
+    updateWidgetList();
+  }
+
+  void updateWidgetList() {
+    List<Widget> result = [];
+    for(int i=0; i<tiles.length; i++) {
+      Tile tile = tiles[i];
+      result.add(
+        InkWell(
+          onTap: () {
+            swapTiles(i);
+          },
+          child: Stack(
+            children: [
+              Container(
+                color: tile.color,
+                child: Padding(
+                  padding: EdgeInsets.all(70.0),
+                )
+              ),
+              Text("${tile.x*3 + tile.y}", style: TextStyle(fontSize: 30),),
+            ]
+          ),
+        )
+      );
+    }
+    
+    setState(() {
+      widgets = result;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          }, 
+          icon: Icon(Icons.arrow_back_ios_rounded)),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text("Exercice 6"),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: GridView.count(
+              primary: false,
+              padding: const EdgeInsets.all(20),
+              crossAxisSpacing: 2,
+              mainAxisSpacing: 2,
+              crossAxisCount: size,
+              children: widgets,
+            ),
+          ),
+        ],
+      )
+    );
+  }
+}
