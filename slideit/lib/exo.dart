@@ -1,6 +1,58 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
+class ExoPage extends StatefulWidget {
+  const ExoPage({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<ExoPage> createState() => _ExoPageState();
+}
+
+class _ExoPageState extends State<ExoPage> {
+
+  Widget getMenuCard(String title, String description, Widget Function() pageBuilder) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+      child: ListTile(
+        trailing: Icon(Icons.arrow_forward_ios_rounded,),
+        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold),),
+        subtitle: Text(description),
+        onTap: (){
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => pageBuilder()),
+          );
+        },
+      )
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: ListView(
+          children: [
+            getMenuCard("Ex1", "Random image generator", () => Ex1()),
+            getMenuCard("Ex2", "Resize/rotate/scale image", () => Ex2()),
+            getMenuCard("Ex4", "Crop image", () => Ex4()),
+            getMenuCard("Ex5", "Grid view of an image", () => Ex5()),
+            getMenuCard("Ex6", "Grid view with tile swap", () => Ex6()),
+          ],
+        ),
+      )
+    );
+  }
+}
+
+//EX 1
 class Ex1 extends StatefulWidget {
   const Ex1({super.key});
 
@@ -26,6 +78,7 @@ class _Ex1State extends State<Ex1> {
   }
 }
 
+//EX 2
 class Ex2 extends StatefulWidget {
   const Ex2({super.key});
 
@@ -101,6 +154,7 @@ class _Ex2State extends State<Ex2> {
   }
 }
 
+//EX 4
 class Ex4 extends StatefulWidget {
   const Ex4({super.key});
 
@@ -196,6 +250,7 @@ class _Ex4State extends State<Ex4> {
   }
 }
 
+//EX 5
 class Ex5 extends StatefulWidget {
   const Ex5({super.key});
 
@@ -287,10 +342,9 @@ class _Ex5State extends State<Ex5> {
 class Tile {
   Color color = Colors.grey;
   bool empty = false;
-  int x = 0;
-  int y = 0;
+  int index = 0;
 
-  Tile(this.x, this.y, this.empty) {
+  Tile(this.index, this.empty) {
     if (empty) {
       color = Colors.white;
     }
@@ -319,22 +373,26 @@ class _Ex6State extends State<Ex6> {
 
   List<Tile> getTileList() {
     List<Tile> result = [];
-    for (int i=0; i<size; i++) {
-      for (int j=0; j<size; j++) {
-        result.add(Tile(i, j, false));
-      }
+    for (int i=0; i<size*size; i++) {
+      result.add(Tile(i, false));
     }
     emptyIndex = Random().nextInt(size*size);
-    result[emptyIndex] = Tile(result[emptyIndex].x, result[emptyIndex].y, true);
+    result[emptyIndex] = Tile(result[emptyIndex].index, true);
     return result;
   }
 
+  bool isNextToEmpty(int index) {
+    return index == emptyIndex-1 || index == emptyIndex+1 || index == emptyIndex-size || index == emptyIndex+size;
+  }
+
   void swapTiles(int index) {
-    Tile temp = tiles[emptyIndex];
-    tiles[emptyIndex] = tiles[index];
-    tiles[index] = temp;
-    emptyIndex = index;
-    updateWidgetList();
+    if (isNextToEmpty(index)) {
+      Tile temp = tiles[emptyIndex];
+      tiles[emptyIndex] = tiles[index];
+      tiles[index] = temp;
+      emptyIndex = index;
+      updateWidgetList();
+    }
   }
 
   void updateWidgetList() {
@@ -354,7 +412,7 @@ class _Ex6State extends State<Ex6> {
                   padding: EdgeInsets.all(70.0),
                 )
               ),
-              Text("${tile.x*3 + tile.y}", style: TextStyle(fontSize: 30),),
+              Text("${tile.index}", style: TextStyle(fontSize: 30),),
             ]
           ),
         )

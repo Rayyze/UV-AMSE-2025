@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:slideit/exo.dart';
+import 'package:slideit/styles.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,42 +36,54 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  Widget getMenuCard(String title, String description, Widget Function() pageBuilder) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-      child: ListTile(
-        trailing: Icon(Icons.arrow_forward_ios_rounded,),
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold),),
-        subtitle: Text(description),
-        onTap: (){
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => pageBuilder()),
-          );
-        },
-      )
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    
+    final double buttonWidth = MediaQuery.of(context).size.width * 0.8;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
       body: Center(
-        child: ListView(
+        child: Column(
           children: [
-            getMenuCard("Ex1", "Random image generator", () => Ex1()),
-            getMenuCard("Ex2", "Resize/rotate/scale image", () => Ex2()),
-            getMenuCard("Ex4", "Crop image", () => Ex4()),
-            getMenuCard("Ex5", "Grid view of an image", () => Ex5()),
-            getMenuCard("Ex6", "Grid view with tile swap", () => Ex6()),
+            CustomTextButton(
+              width: buttonWidth,
+              text: "CONTINUE", 
+              action: () {
+                
+              },
+            ),
+            SizedBox(height: 20),
+            CustomTextButton(
+              width: buttonWidth,
+              text: "NEW GAME", 
+              action: () {
+                
+              },
+            ),
+            SizedBox(height: 20),
+            CustomTextButton(
+              width: buttonWidth,
+              text: "FEATURES", 
+              action: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ExoPage(title: "Exercices")));
+              },
+            ),
+            SizedBox(height: 20),
+            CustomTextButton(
+              width: buttonWidth,
+              text: "SETTINGS", 
+              action: () {
+                
+              },
+            ),
+            SizedBox(height: 20),
+            CustomTextButton(
+              width: buttonWidth,
+              text: "EXIT", 
+              action: () => Navigator.pop(context),
+            ),
           ],
         ),
       )
     );
   }
 }
+
