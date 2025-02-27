@@ -88,8 +88,10 @@ class Ex2 extends StatefulWidget {
 
 class _Ex2State extends State<Ex2> {
   double rotateX = 0.0;
+  double rotateY = 0.0;
   double rotateZ = 0.0;
   double scale = 1.0;
+  bool checkBoxValue = false;
   Image img = Image.network(
     "https://picsum.photos/1920/1080?random=${Random().nextInt(10000)}",
     fit: BoxFit.cover,
@@ -114,7 +116,7 @@ class _Ex2State extends State<Ex2> {
             decoration: BoxDecoration(color: Colors.white),
             child: Transform(
               alignment: Alignment.center,
-              transform: Matrix4.identity()..rotateX(rotateX) ..rotateZ(rotateZ)..scale(scale),
+              transform: Matrix4.identity()..rotateY(rotateY)..rotateX(rotateX) ..rotateZ(rotateZ)..scale(scale),
               child: img,
             ),
           ),
@@ -137,6 +139,22 @@ class _Ex2State extends State<Ex2> {
                 rotateZ = value;
               });
             },
+          ),
+          Row(
+            children: [
+              Text("Mirror :"),
+              Checkbox(
+                value: checkBoxValue, 
+                onChanged: (value) {
+                  setState(() {
+                    if (value !=null) {
+                      checkBoxValue = value;
+                      rotateY = value ? pi : 0.0;
+                    }
+                  });
+                }
+              )
+            ],
           ),
           Text("Scale :"),
           Slider(

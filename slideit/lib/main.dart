@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:slideit/exo.dart';
+import 'package:slideit/game.dart';
 import 'package:slideit/styles.dart';
 
 void main() {
@@ -15,20 +14,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'TP2',
+      title: 'SlideIt',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'TP2'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key});
 
-  final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -47,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
               width: buttonWidth,
               text: "CONTINUE", 
               action: () {
-                
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Game(continueGame: true, size: 3, shuffleCount: 10,)));
               },
             ),
             SizedBox(height: 20),
@@ -55,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
               width: buttonWidth,
               text: "NEW GAME", 
               action: () {
-                
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Game(continueGame: false, size: 3, shuffleCount: 10,)));
               },
             ),
             SizedBox(height: 20),
