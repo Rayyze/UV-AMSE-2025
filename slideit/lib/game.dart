@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:slideit/main.dart';
 import 'package:slideit/styles.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -39,6 +38,7 @@ class _GameState extends State<Game> {
   bool gameWon = false;
   bool gameReady = false;
   int minMoves = 0;
+  int shuffleCount = 10;
 
   @override
   void initState() {
@@ -47,6 +47,7 @@ class _GameState extends State<Game> {
   }
   
   Future<void> startGame() async {
+    shuffleCount = widget.shuffleCount;
     if (widget.continueGame) {
       await loadGame();
       updateWidgetList();
@@ -55,13 +56,20 @@ class _GameState extends State<Game> {
       });
     } else {
       await saveImage();
+      await loadSettings();
       tiles = getTileList();
-      shuffle(widget.shuffleCount);
+      shuffle();
       updateWidgetList();
       setState(() {
         gameReady = true;
       });
     }
+  }
+
+  Future<void> loadSettings() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    size = prefs.getInt("sizeSetting") ?? 3;
+    shuffleCount = prefs.getInt("shuffleSetting") ?? 10;
   }
 
   Future<void> saveImage() async {
@@ -163,8 +171,8 @@ class _GameState extends State<Game> {
     }
   }
 
-  void shuffle(int n) {
-    for (int i=0; i<n; i++) {
+  void shuffle() {
+    for (int i=0; i<shuffleCount; i++) {
       List<int> availableIndices = [];
       if (emptyIndex%size != size-1) availableIndices.add(emptyIndex+1);
       if (emptyIndex%size != 0) availableIndices.add(emptyIndex-1);
@@ -304,31 +312,35 @@ class _GameState extends State<Game> {
           ),
           SizedBox(height: 20),
           gameWon ? CustomTextButton(
+            textColor: Theme.of(context).scaffoldBackgroundColor,
+            backgroundColor: Theme.of(context).primaryColor,
             text: "NEW GAME", 
             width: MediaQuery.of(context).size.width * 0.8, 
             action: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => Game(continueGame: false, size: widget.size, shuffleCount: widget.shuffleCount)));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Game(continueGame: false, size: widget.size, shuffleCount: widget.shuffleCount)));
             }
           ) : CustomTextButton(
+            textColor: Theme.of(context).scaffoldBackgroundColor,
+            backgroundColor: Theme.of(context).primaryColor,
             text: "SAVE & QUIT", 
             width: MediaQuery.of(context).size.width * 0.8, 
             action: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage()));
+                Navigator.pop(context);
             }
           )
         ],
       )
       : Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(
-            child: GridView.count(
-              primary: false,
-              padding: const EdgeInsets.all(20),
-              crossAxisSpacing: 2,
-              mainAxisSpacing: 2,
-              crossAxisCount: size,
-              children: widgets,
-            ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Theme.of(context).brightness == Brightness.light ? Image.asset("icon_cropped.png") : Image.asset("icon_cropped_dark.png"),
+          ),
+          SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+            child: LinearProgressIndicator(color: Theme.of(context).primaryColor),
           ),
         ],
       )

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="512"
+   height="512"
+   viewBox="0 0 512 512"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="icon.svg"
+   inkscape:export-filename="icon.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="px"
+     inkscape:zoom="1.5878906"
+     inkscape:cx="-50.381305"
+     inkscape:cy="184.83641"
+     inkscape:window-width="2560"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect1"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,2.0391774,0,1 @ F,0,0,1,0,9.0936412,0,1 @ F,0,0,1,0,9.0936412,0,1 @ F,0,0,1,0,1.3391275,0,1"
+       radius="9.0936412"
+       unit="px"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect2"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,1.8892995,0,1 @ F,0,0,1,0,9.4464951,0,1 @ F,0,0,1,0,9.4464951,0,1 @ F,0,0,1,0,0.94465007,0,1 @ F,0,0,1,0,9.4464951,0,1 @ F,0,0,1,0,9.4464951,0,1"
+       radius="9.4464951"
+       unit="px"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <rect
+       x="79.98032"
+       y="185.78106"
+       width="272.05904"
+       height="180.11316"
+       id="rect1" />
+    <rect
+       x="79.980324"
+       y="185.78107"
+       width="202.15499"
+       height="265.76138"
+       id="rect1-7" />
+    <rect
+       x="79.980324"
+       y="185.78107"
+       width="155.55228"
+       height="217.26937"
+       id="rect1-78" />
+  </defs>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#c21d3c;fill-opacity:1;stroke-width:10.946;stroke-linejoin:bevel"
+       id="rect3"
+       width="145.47601"
+       height="194.59778"
+       x="361.48587"
+       y="147.99509"
+       ry="9.1503658" />
+    <text
+       xml:space="preserve"
+       id="text1"
+       style="font-size:160px;white-space:pre;shape-inside:url(#rect1);display:inline;fill:#ffc404;fill-opacity:1;stroke-width:12.3099;stroke-linejoin:bevel"
+       transform="translate(14.484624,1.2595326)"><tspan
+         x="79.980469"
+         y="331.36128"
+         id="tspan1">lide</tspan></text>
+    <text
+       xml:space="preserve"
+       id="text1-7"
+       style="font-size:192px;white-space:pre;shape-inside:url(#rect1-78);display:inline;fill:#c91d3a;fill-opacity:1;stroke-width:12.3099;stroke-linejoin:bevel"
+       transform="matrix(1,0,0,1.0815478,286.26086,-69.401304)"><tspan
+         x="79.980469"
+         y="360.47729"
+         id="tspan3"><tspan
+           style="fill:#ffffff"
+           id="tspan2">It</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       id="text1-4"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:213.333px;font-family:Consolas;-inkscape-font-specification:Consolas;white-space:pre;shape-inside:url(#rect1-7);display:inline;fill:#ffc404;fill-opacity:1;stroke-width:12.3099;stroke-linejoin:bevel"
+       transform="matrix(1.0682365,0,0,1.0945352,-93.402689,-76.450455)"><tspan
+         x="79.980469"
+         y="370.88512"
+         id="tspan4">S</tspan></text>
+    <path
+       style="fill:#ffc404;fill-opacity:1;stroke-width:12.7787;stroke-linejoin:bevel"
+       id="rect2"
+       width="219.78844"
+       height="18.89299"
+       x="95.094711"
+       y="181.3727"
+       ry="9.4464951"
+       sodipodi:type="rect"
+       transform="matrix(1.0476361,0,0,0.97083334,-7.4426105,6.6282899)"
+       inkscape:path-effect="#path-effect1"
+       d="M 97.133889,181.3727 H 305.78951 a 9.0936412,9.0936412 45 0 1 9.09364,9.09364 v 0.7057 a 9.0936412,9.0936412 135 0 1 -9.09364,9.09365 H 96.433839 a 1.3391275,1.3391275 45 0 1 -1.339128,-1.33913 v -15.51469 a 2.0391774,2.0391774 135 0 1 2.039178,-2.03917 z" />
+    <path
+       sodipodi:type="star"
+       style="fill:#ffc404;fill-opacity:1;stroke-width:12.3099;stroke-linejoin:bevel"
+       id="path2"
+       inkscape:flatsided="true"
+       sodipodi:sides="3"
+       sodipodi:cx="267.65067"
+       sodipodi:cy="73.682655"
+       sodipodi:r1="48.691975"
+       sodipodi:r2="24.345987"
+       sodipodi:arg1="0.090659887"
+       sodipodi:arg2="1.1378574"
+       inkscape:rounded="0.1"
+       inkscape:randomized="0"
+       d="m 316.14267,78.09102 c -0.76355,8.399062 -69.66374,40.24355 -76.55576,35.38276 -6.89203,-4.86078 -0.0201,-80.45234 7.63551,-83.990617 7.65557,-3.538276 69.6838,40.208795 68.92025,48.607857 z"
+       transform="rotate(-4.0060178,1953.248,-446.65878)"
+       inkscape:export-filename="icon_cropped_dark.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+  </g>
+</svg>
