@@ -33,10 +33,14 @@ class _GameState extends State<Game> {
   Image img = Image.network("https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg?20200913095930");
   int size = 3;
   int emptyIndex = -1;
+  int lastSwapIndex = -1;
+  int moves = 0;
   List<Widget> widgets = [];
   List<Tile> tiles = [];
   bool gameWon = false;
   bool gameReady = false;
+  bool showNumbers = true;
+  bool canUndo = false;
   int minMoves = 0;
   int shuffleCount = 10;
 
@@ -50,20 +54,19 @@ class _GameState extends State<Game> {
     shuffleCount = widget.shuffleCount;
     if (widget.continueGame) {
       await loadGame();
-      updateWidgetList();
-      setState(() {
-        gameReady = true;
-      });
     } else {
       await saveImage();
       await loadSettings();
       tiles = getTileList();
       shuffle();
-      updateWidgetList();
-      setState(() {
-        gameReady = true;
-      });
     }
+    minMoves = getMinMoves(tiles, size);
+    moves = 0;
+    canUndo = false;
+    updateWidgetList();
+    setState(() {
+      gameReady = true;
+    });
   }
 
   Future<void> loadSettings() async {
@@ -165,19 +168,23 @@ class _GameState extends State<Game> {
       Tile temp = tiles[emptyIndex];
       tiles[emptyIndex] = tiles[index];
       tiles[index] = temp;
+      lastSwapIndex = emptyIndex;
       emptyIndex = index;
 
       saveGame();
     }
+    
+    canUndo = true;
+    moves+=1;
   }
 
   void shuffle() {
     for (int i=0; i<shuffleCount; i++) {
       List<int> availableIndices = [];
-      if (emptyIndex%size != size-1) availableIndices.add(emptyIndex+1);
-      if (emptyIndex%size != 0) availableIndices.add(emptyIndex-1);
-      if (emptyIndex~/size != size-1) availableIndices.add(emptyIndex + size);
-      if (emptyIndex > size) availableIndices.add(emptyIndex-size);
+      if (emptyIndex+1 != lastSwapIndex && emptyIndex%size != size-1) availableIndices.add(emptyIndex+1);
+      if (emptyIndex-1 != lastSwapIndex && emptyIndex%size != 0) availableIndices.add(emptyIndex-1);
+      if (emptyIndex+size != lastSwapIndex && emptyIndex~/size != size-1) availableIndices.add(emptyIndex + size);
+      if (emptyIndex-size != lastSwapIndex && emptyIndex > size) availableIndices.add(emptyIndex-size);
 
       if (availableIndices.isNotEmpty) swapTiles(availableIndices[Random().nextInt(availableIndices.length)]);
     }
@@ -253,9 +260,6 @@ class _GameState extends State<Game> {
               });
             }
             updateWidgetList();
-            setState(() {
-              minMoves = getMinMoves(tiles, size);
-            });
           },
           child: Stack(
             children: [
@@ -266,7 +270,7 @@ class _GameState extends State<Game> {
                   padding: EdgeInsets.all(70.0),
                 )
               ) : tile.img,
-              Container(
+              showNumbers ? Container(
                 width: 30,
                 height: 30,
                 decoration: BoxDecoration(
@@ -281,8 +285,8 @@ class _GameState extends State<Game> {
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
-                ),
-              )
+                )
+              ) : SizedBox.shrink(),
             ]
           ),
         )
@@ -299,18 +303,76 @@ class _GameState extends State<Game> {
     return Scaffold(
       body: gameReady ? Column(
         children: [
-          gameWon ? Text("You won") : SizedBox.shrink(),
-          SizedBox(height: 20),
+          Padding(
+            padding: EdgeInsets.all(20),
+            child: Theme.of(context).brightness == Brightness.light ? Image.asset("icon_cropped.png") : Image.asset("icon_cropped_dark.png"),
+          ),
+          gameWon ? Text("Congrats !", style: TextStyle(fontSize: 30),) : SizedBox.shrink(),
+          Padding(
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+            child: Row(
+              children: [
+                Icon(Icons.open_with_rounded),
+                SizedBox(width: 8),
+                Text("Your moves : $moves"),
+              ],
+            ),
+          ),
           GridView.count(
             shrinkWrap: true,
             primary: false,
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
             crossAxisSpacing: 2,
             mainAxisSpacing: 2,
             crossAxisCount: size,
             children: widgets,
           ),
-          SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+            child: Row(
+              children: [
+                Icon(Icons.tips_and_updates_rounded),
+                SizedBox(width: 8),
+                Text("Minimum moves : $minMoves"),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+            child: Row(
+              children: [
+                Text("Show Numbers :"),
+                Checkbox(
+                  activeColor: Theme.of(context).primaryColor,
+                  value: showNumbers, 
+                  onChanged: (value) {
+                    setState(() {
+                      if (value !=null) {
+                        showNumbers = value;
+                        updateWidgetList();
+                      }
+                    });
+                  }
+                ),
+                Spacer(),
+                CustomTextButton(
+                  enabled: canUndo,
+                  textColor: Theme.of(context).scaffoldBackgroundColor,
+                  backgroundColor: Theme.of(context).primaryColor,
+                  text: "UNDO", 
+                  width: 100, 
+                  action: () {
+                    swapTiles(lastSwapIndex);
+                    canUndo = false;
+                    moves-=2;
+                    setState(() {
+                      updateWidgetList();
+                    });
+                  }
+                ),
+              ],
+            ),
+          ),
           gameWon ? CustomTextButton(
             textColor: Theme.of(context).scaffoldBackgroundColor,
             backgroundColor: Theme.of(context).primaryColor,
@@ -319,15 +381,17 @@ class _GameState extends State<Game> {
             action: () {
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Game(continueGame: false, size: widget.size, shuffleCount: widget.shuffleCount)));
             }
-          ) : CustomTextButton(
+          ) : SizedBox.shrink(),
+          SizedBox(height: 20),
+          CustomTextButton(
             textColor: Theme.of(context).scaffoldBackgroundColor,
-            backgroundColor: Theme.of(context).primaryColor,
-            text: "SAVE & QUIT", 
+            backgroundColor: Colors.redAccent,
+            text: gameWon ? "QUIT" : "SAVE & QUIT", 
             width: MediaQuery.of(context).size.width * 0.8, 
             action: () {
                 Navigator.pop(context);
             }
-          )
+          ), 
         ],
       )
       : Column(

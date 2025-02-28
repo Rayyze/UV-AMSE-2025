@@ -6,6 +6,7 @@ class CustomTextButton extends StatelessWidget {
   final Color backgroundColor;
   final double width;
   final Color textColor;
+  final bool enabled;
 
   const CustomTextButton({
     super.key,
@@ -14,6 +15,7 @@ class CustomTextButton extends StatelessWidget {
     required this.action,
     this.backgroundColor = Colors.lightBlueAccent,
     this.textColor = Colors.white,
+    this.enabled = true,
   });
 
   @override
@@ -25,9 +27,9 @@ class CustomTextButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: ElevatedButton(
-        onPressed: action,
+        onPressed: enabled ? action : () => {},
         style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor,
+          backgroundColor: enabled ? backgroundColor : Colors.grey,
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),

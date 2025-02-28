@@ -238,8 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 SizedBox(height: 20),
                 CustomTextButton(
-                  textColor: Theme.of(context).scaffoldBackgroundColor,
-                  backgroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: Colors.redAccent,
                   width: buttonWidth,
                   text: "EXIT", 
                   action: () => Navigator.pop(context),
