@@ -49,17 +49,12 @@ class _GameState extends State<Game> {
   Future<void> startGame() async {
     if (widget.continueGame) {
       await loadGame();
-      print("game loaded");
       updateWidgetList();
       setState(() {
         gameReady = true;
       });
     } else {
-      img = Image.network(
-        imageUrl,
-        fit: BoxFit.scaleDown,
-      );
-      saveImage();
+      await saveImage();
       tiles = getTileList();
       shuffle(widget.shuffleCount);
       updateWidgetList();
@@ -70,10 +65,10 @@ class _GameState extends State<Game> {
   }
 
   Future<void> saveImage() async {
-    print("saving");
     final response = await http.get(Uri.parse(imageUrl));
     if (response.statusCode == 200) {
       Uint8List  bytes = response.bodyBytes;
+      img = Image.memory(bytes, fit: BoxFit.scaleDown,);
       String base64Image = base64Encode(bytes);
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
