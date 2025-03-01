@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:slideit/exo.dart';
 import 'package:slideit/game.dart';
+import 'package:slideit/sound_manager.dart';
 import 'package:slideit/styles.dart';
 
 void main() async {
@@ -22,6 +23,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late bool isDarkMode;
+  SoundManager soundManager = SoundManager();
 
   @override
   void initState() {
@@ -77,14 +79,27 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int size = 3;
   int shuffleCount = 10;
+  double loopingVolume = 0.0;
+  double volume = 0.0;
   String difficultyLabel = "Easy";
+  bool continueAllowed = false;
 
   @override
   void initState() {
+    loadSettings();
     size = 3;
     shuffleCount = 10;
     difficultyLabel = "Easy";
     super.initState();
+  }
+
+  Future<void> loadSettings() async {
+    SoundManager soundManager = SoundManager();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    volume = prefs.getDouble("volume") ?? 0.0;
+    continueAllowed = prefs.getBool("continue") ?? false;
+    soundManager.changeVolume(volume);
+    setState(() {});
   }
 
   void showSettings() {
@@ -140,6 +155,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   ),
                   SizedBox(height: 8),
+                  Text("Sound Effects Volume"),
+                  Slider(
+                    activeColor: Theme.of(context).primaryColor,
+                    value: volume,
+                    min: 0,
+                    max: 1,
+                    onChanged: (double value) {
+                      setDialogState(() {
+                        volume = value;
+                        SoundManager().changeVolume(volume);
+                      });
+                    },
+                  ),
+                  SizedBox(height: 8),
                   ToggleButtons(
                     direction: Axis.horizontal,
                     onPressed: (int index) {
@@ -180,6 +209,8 @@ class _MyHomePageState extends State<MyHomePage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt("sizeSetting", size);
     await prefs.setInt("shuffleSetting", shuffleCount);
+    await prefs.setDouble("volume", volume);
+    await prefs.setDouble("loopingVolume", loopingVolume);
   }
 
   @override
@@ -198,12 +229,18 @@ class _MyHomePageState extends State<MyHomePage> {
             Column(
               children: [
                 CustomTextButton(
+                  enabled: continueAllowed,
                   textColor: Theme.of(context).scaffoldBackgroundColor,
                   backgroundColor: Theme.of(context).primaryColor,
                   width: buttonWidth,
                   text: "CONTINUE", 
-                  action: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => Game(continueGame: true, size: 3, shuffleCount: 10,)));
+                  action: () async {
+                    bool? result = await Navigator.push(context, MaterialPageRoute(builder: (context) => Game(continueGame: true, size: 3, shuffleCount: 10,)));
+                    if (result!=null) {
+                      setState(() {
+                        continueAllowed = result;
+                      });
+                    }
                   },
                 ),
                 SizedBox(height: 20),
@@ -212,8 +249,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   backgroundColor: Theme.of(context).primaryColor,
                   width: buttonWidth,
                   text: "NEW GAME", 
-                  action: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => Game(continueGame: false, size: 3, shuffleCount: 10,)));
+                  action: () async {
+                    bool? result = await Navigator.push(context, MaterialPageRoute(builder: (context) => Game(continueGame: false, size: 3, shuffleCount: 10,)));
+                    if (result!=null) {
+                      setState(() {
+                        continueAllowed = result;
+                      });
+                    }
                   },
                 ),
                 SizedBox(height: 20),

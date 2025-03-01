@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:slideit/sound_manager.dart';
 import 'package:slideit/styles.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -28,6 +29,7 @@ class Game extends StatefulWidget {
 }
 
 class _GameState extends State<Game> {
+  SoundManager soundManager = SoundManager();
   static const int imgSize = 1080;
   String imageUrl = "https://picsum.photos/$imgSize?random=${Random().nextInt(10000)}";
   Image img = Image.network("https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg?20200913095930");
@@ -95,7 +97,7 @@ class _GameState extends State<Game> {
     await prefs.setStringList('tiles', tileIndices);
     await prefs.setInt('emptyIndex', emptyIndex);
     await prefs.setInt('size', size);
-    await prefs.setBool("continue", gameWon ? true : false);
+    await prefs.setBool("continue", gameWon ? false : true);
   }
 
   Future<void> loadGame() async {
@@ -165,17 +167,18 @@ class _GameState extends State<Game> {
       return;
     }
     if (isNextToEmpty(index)) {
+      soundManager.playSound("click.mp3");
       Tile temp = tiles[emptyIndex];
       tiles[emptyIndex] = tiles[index];
       tiles[index] = temp;
       lastSwapIndex = emptyIndex;
       emptyIndex = index;
+      moves+=1;
 
       saveGame();
     }
     
     canUndo = true;
-    moves+=1;
   }
 
   void shuffle() {
@@ -256,6 +259,7 @@ class _GameState extends State<Game> {
               tiles[emptyIndex].empty = false;
               setState(() {
                 gameWon = true;
+                canUndo = false;
                 saveGame();
               });
             }
@@ -274,7 +278,7 @@ class _GameState extends State<Game> {
                 width: 30,
                 height: 30,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(101, 255, 255, 255),
+                  color: tile.empty ? const Color.fromARGB(164, 245, 117, 117) : const Color.fromARGB(101, 255, 255, 255),
                   shape: BoxShape.circle,
                 ),
                 alignment: Alignment.center,
@@ -389,7 +393,7 @@ class _GameState extends State<Game> {
             text: gameWon ? "QUIT" : "SAVE & QUIT", 
             width: MediaQuery.of(context).size.width * 0.8, 
             action: () {
-                Navigator.pop(context);
+                Navigator.pop(context, !gameWon);
             }
           ), 
         ],

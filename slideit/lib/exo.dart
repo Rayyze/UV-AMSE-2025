@@ -34,8 +34,14 @@ class _ExoPageState extends State<ExoPage> {
     
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          }, 
+          icon: Icon(Icons.arrow_back_ios_rounded, color: Theme.of(context).scaffoldBackgroundColor,)
+        ),
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text(widget.title, style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),),
       ),
       body: Center(
         child: ListView(
@@ -69,9 +75,10 @@ class _Ex1State extends State<Ex1> {
           onPressed: () {
             Navigator.pop(context);
           }, 
-          icon: Icon(Icons.arrow_back_ios_rounded)),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Exercice 1"),
+          icon: Icon(Icons.arrow_back_ios_rounded, color: Theme.of(context).scaffoldBackgroundColor,)
+        ),
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text("Exercice 1", style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),),
       ),
       body: Image.network("https://picsum.photos/1920/1080?random=${Random().nextInt(10000)}")
     );
@@ -105,9 +112,9 @@ class _Ex2State extends State<Ex2> {
           onPressed: () {
             Navigator.pop(context);
           }, 
-          icon: Icon(Icons.arrow_back_ios_rounded)),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Exercice 2"),
+          icon: Icon(Icons.arrow_back_ios_rounded, color: Theme.of(context).scaffoldBackgroundColor,)),
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text("Exercice 2", style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),),
       ),
       body: Column(
         children: [
@@ -122,6 +129,7 @@ class _Ex2State extends State<Ex2> {
           ),
           Text("Rotate X :"),
           Slider(
+            activeColor: Theme.of(context).primaryColor,
             value: rotateX,
             max: 2*pi,
             onChanged: (double value) {
@@ -132,6 +140,7 @@ class _Ex2State extends State<Ex2> {
           ),
           Text("Rotate Y :"),
           Slider(
+            activeColor: Theme.of(context).primaryColor,
             value: rotateZ,
             max: 2*pi,
             onChanged: (double value) {
@@ -144,6 +153,7 @@ class _Ex2State extends State<Ex2> {
             children: [
               Text("Mirror :"),
               Checkbox(
+                activeColor: Theme.of(context).primaryColor,
                 value: checkBoxValue, 
                 onChanged: (value) {
                   setState(() {
@@ -158,6 +168,7 @@ class _Ex2State extends State<Ex2> {
           ),
           Text("Scale :"),
           Slider(
+            activeColor: Theme.of(context).primaryColor,
             value: scale,
             max: 1.5,
             onChanged: (double value) {
@@ -212,9 +223,9 @@ class _Ex4State extends State<Ex4> {
           onPressed: () {
             Navigator.pop(context);
           }, 
-          icon: Icon(Icons.arrow_back_ios_rounded)),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Exercice 4"),
+          icon: Icon(Icons.arrow_back_ios_rounded, color: Theme.of(context).scaffoldBackgroundColor,)),
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text("Exercice 4", style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),),
       ),
       body: Column(
         children: [
@@ -224,6 +235,7 @@ class _Ex4State extends State<Ex4> {
           ),
           Text("Width factor :"),
           Slider(
+            activeColor: Theme.of(context).primaryColor,
             value: widthFactor,
             max: 1.0,
             onChanged: (double value) {
@@ -234,6 +246,7 @@ class _Ex4State extends State<Ex4> {
           ),
           Text("Height factor :"),
           Slider(
+            activeColor: Theme.of(context).primaryColor,
             value: heightFactor,
             max: 1.0,
             onChanged: (double value) {
@@ -244,6 +257,7 @@ class _Ex4State extends State<Ex4> {
           ),
           Text("X alignement :"),
           Slider(
+            activeColor: Theme.of(context).primaryColor,
             value: alignX,
             max: 1.0,
             onChanged: (double value) {
@@ -254,6 +268,7 @@ class _Ex4State extends State<Ex4> {
           ),
           Text("Y alignement :"),
           Slider(
+            activeColor: Theme.of(context).primaryColor,
             value: alignY,
             max: 1.0,
             onChanged: (double value) {
@@ -320,9 +335,9 @@ class _Ex5State extends State<Ex5> {
           onPressed: () {
             Navigator.pop(context);
           }, 
-          icon: Icon(Icons.arrow_back_ios_rounded)),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Exercice 5"),
+          icon: Icon(Icons.arrow_back_ios_rounded, color: Theme.of(context).scaffoldBackgroundColor,)),
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text("Exercice 5", style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),),
       ),
       body: Column(
         children: [
@@ -338,6 +353,7 @@ class _Ex5State extends State<Ex5> {
           ),
           Text("Size :"),
           Slider(
+            activeColor: Theme.of(context).primaryColor,
             value: size as double,
             max: 10,
             min: 2,
@@ -450,9 +466,9 @@ class _Ex6State extends State<Ex6> {
           onPressed: () {
             Navigator.pop(context);
           }, 
-          icon: Icon(Icons.arrow_back_ios_rounded)),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Exercice 6"),
+          icon: Icon(Icons.arrow_back_ios_rounded, color: Theme.of(context).scaffoldBackgroundColor,)),
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text("Exercice 6", style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),),
       ),
       body: Column(
         children: [
