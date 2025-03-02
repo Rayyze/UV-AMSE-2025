@@ -249,13 +249,26 @@ class _MyHomePageState extends State<MyHomePage> {
                   backgroundColor: Theme.of(context).primaryColor,
                   width: buttonWidth,
                   text: "NEW GAME", 
-                  action: () async {
-                    bool? result = await Navigator.push(context, MaterialPageRoute(builder: (context) => Game(continueGame: false, size: 3, shuffleCount: 10,)));
-                    if (result!=null) {
-                      setState(() {
-                        continueAllowed = result;
-                      });
-                    }
+                  action: () {
+                    showNewGameDialog(
+                      context,
+                      () async {
+                        bool? result = await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Game(continueGame: false, size: size, shuffleCount: shuffleCount, randomGame: true,)));
+                        if (result!=null) {
+                          setState(() {
+                            continueAllowed = result;
+                          });
+                        }
+                      },
+                      () async {
+                        bool? result = await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Game(continueGame: false, size: size, shuffleCount: shuffleCount, randomGame: false,)));
+                        if (result!=null) {
+                          setState(() {
+                            continueAllowed = result;
+                          });
+                        }
+                      },
+                    );
                   },
                 ),
                 SizedBox(height: 20),

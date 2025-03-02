@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:slideit/image_import.dart';
 import 'package:slideit/sound_manager.dart';
 import 'package:slideit/styles.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 
 class Tile {
   Color color = Colors.white;
@@ -20,8 +20,9 @@ class Game extends StatefulWidget {
   final bool continueGame;
   final int size;
   final int shuffleCount;
+  final bool randomGame;
 
-  const Game({super.key, required this.continueGame, required this.size, required this.shuffleCount});
+  const Game({super.key, required this.continueGame, required this.size, required this.shuffleCount, this.randomGame = true});
 
   @override
   State<StatefulWidget> createState() => _GameState();
@@ -57,7 +58,11 @@ class _GameState extends State<Game> {
     if (widget.continueGame) {
       await loadGame();
     } else {
-      await saveImage();
+      if (widget.randomGame) {
+        img = await fetchAndSaveImageRandom(imageUrl);
+      } else {
+        img = await fetchAndSaveImageGallery();
+      }
       await loadSettings();
       tiles = getTileList();
       shuffle();
@@ -75,18 +80,6 @@ class _GameState extends State<Game> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     size = prefs.getInt("sizeSetting") ?? 3;
     shuffleCount = prefs.getInt("shuffleSetting") ?? 10;
-  }
-
-  Future<void> saveImage() async {
-    final response = await http.get(Uri.parse(imageUrl));
-    if (response.statusCode == 200) {
-      Uint8List  bytes = response.bodyBytes;
-      img = Image.memory(bytes, fit: BoxFit.scaleDown,);
-      String base64Image = base64Encode(bytes);
-
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('imageBase64', base64Image);
-    }
   }
 
   Future<void> saveGame() async {
@@ -175,6 +168,7 @@ class _GameState extends State<Game> {
       emptyIndex = index;
       moves+=1;
 
+      
       saveGame();
     }
     
@@ -383,7 +377,17 @@ class _GameState extends State<Game> {
             text: "NEW GAME", 
             width: MediaQuery.of(context).size.width * 0.8, 
             action: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Game(continueGame: false, size: widget.size, shuffleCount: widget.shuffleCount)));
+              showNewGameDialog(
+                context, 
+                () {
+                  Navigator.pop(context);
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Game(continueGame: false, size: widget.size, shuffleCount: widget.shuffleCount, randomGame: true,)));
+                },  
+                () {
+                  Navigator.pop(context);
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Game(continueGame: false, size: widget.size, shuffleCount: widget.shuffleCount, randomGame: false,)));
+                }, 
+              ); 
             }
           ) : SizedBox.shrink(),
           SizedBox(height: 20),
@@ -393,7 +397,7 @@ class _GameState extends State<Game> {
             text: gameWon ? "QUIT" : "SAVE & QUIT", 
             width: MediaQuery.of(context).size.width * 0.8, 
             action: () {
-                Navigator.pop(context, !gameWon);
+                Navigator.pop(context, gameWon ? false : true);
             }
           ), 
         ],

@@ -44,3 +44,36 @@ class CustomTextButton extends StatelessWidget {
     );
   }
 }
+
+void showNewGameDialog(BuildContext context, void Function() action1, void Function() action2) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setDialogState) {
+          return AlertDialog(
+            title: Text("NEW GAME", textAlign: TextAlign.center),
+            content: Text("Choose a type of game"),
+            actions: [
+              CustomTextButton(
+                backgroundColor: Theme.of(context).primaryColor,
+                textColor: Theme.of(context).scaffoldBackgroundColor,
+                text: "RANDOM", 
+                width: MediaQuery.of(context).size.width * 0.7, 
+                action: action1,
+              ),
+              SizedBox(height: 8,),
+              CustomTextButton(
+                backgroundColor: Theme.of(context).primaryColor,
+                textColor: Theme.of(context).scaffoldBackgroundColor,
+                text: "GALLERY", 
+                width: MediaQuery.of(context).size.width * 0.7, 
+                action: action2,
+              )
+            ],
+          );
+        }
+      );
+    },
+  );
+}
