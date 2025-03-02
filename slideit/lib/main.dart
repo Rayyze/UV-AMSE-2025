@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:slideit/exo.dart';
 import 'package:slideit/game.dart';
@@ -79,8 +81,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int size = 3;
   int shuffleCount = 10;
-  double loopingVolume = 0.0;
-  double volume = 0.0;
+  double volume = 0.5;
   String difficultyLabel = "Easy";
   bool continueAllowed = false;
 
@@ -96,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> loadSettings() async {
     SoundManager soundManager = SoundManager();
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    volume = prefs.getDouble("volume") ?? 0.0;
+    volume = prefs.getDouble("volume") ?? 0.5;
     continueAllowed = prefs.getBool("continue") ?? false;
     soundManager.changeVolume(volume);
     setState(() {});
@@ -210,7 +211,6 @@ class _MyHomePageState extends State<MyHomePage> {
     await prefs.setInt("sizeSetting", size);
     await prefs.setInt("shuffleSetting", shuffleCount);
     await prefs.setDouble("volume", volume);
-    await prefs.setDouble("loopingVolume", loopingVolume);
   }
 
   @override
@@ -223,7 +223,7 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(height: 80),
             Padding(
               padding: EdgeInsets.all(8),
-              child: Theme.of(context).brightness == Brightness.light ? Image.asset("icon_cropped.png") : Image.asset("icon_cropped_dark.png"),
+              child: Theme.of(context).brightness == Brightness.light ? Image.asset("assets/icon_cropped.png") : Image.asset("assets/icon_cropped_dark.png"),
             ),
             SizedBox(height: 80),
             Column(
@@ -296,7 +296,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   backgroundColor: Colors.redAccent,
                   width: buttonWidth,
                   text: "EXIT", 
-                  action: () => Navigator.pop(context),
+                  action: () => {
+                    if (kIsWeb) {
+                      Navigator.pop(context)
+                    } else {
+                      SystemNavigator.pop()
+                    }
+                  }
                 ),
               ],
             ),

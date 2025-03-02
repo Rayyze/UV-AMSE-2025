@@ -299,13 +299,16 @@ class _GameState extends State<Game> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: gameReady ? Column(
+      body: gameReady ? ListView(
         children: [
           Padding(
             padding: EdgeInsets.all(20),
-            child: Theme.of(context).brightness == Brightness.light ? Image.asset("icon_cropped.png") : Image.asset("icon_cropped_dark.png"),
+            child: Theme.of(context).brightness == Brightness.light ? Image.asset("assets/icon_cropped.png") : Image.asset("assets/icon_cropped_dark.png"),
           ),
-          gameWon ? Text("Congrats !", style: TextStyle(fontSize: 30),) : SizedBox.shrink(),
+          gameWon ? Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+            child: Text("Congrats !", style: TextStyle(fontSize: 30, color: Theme.of(context).primaryColor),),
+          ) : SizedBox.shrink(),
           Padding(
             padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
             child: Row(
@@ -407,7 +410,7 @@ class _GameState extends State<Game> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Theme.of(context).brightness == Brightness.light ? Image.asset("icon_cropped.png") : Image.asset("icon_cropped_dark.png"),
+            child: Theme.of(context).brightness == Brightness.light ? Image.asset("assets/icon_cropped.png") : Image.asset("assets/icon_cropped_dark.png"),
           ),
           SizedBox(height: 20),
           Padding(
