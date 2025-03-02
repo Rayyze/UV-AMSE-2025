@@ -37,6 +37,14 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       isDarkMode = !isDarkMode;
     });
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: isDarkMode ? Brightness.light : Brightness.dark,
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: isDarkMode ? Brightness.light : Brightness.dark,
+      ),
+    );
 
     // Save the theme preference
     SharedPreferences prefs = await SharedPreferences.getInstance();
