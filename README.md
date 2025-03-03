@@ -28,5 +28,15 @@ The favorites feature works on web browsers but does not store info between inst
 
 ### Project SlideIt
 #### Objectives
+The goal of this second project was to create a game of sliding puzzle featuring images.
 #### features
+    - Choose between random images and images from gallery
+    - Settings to manage difficulty, size, volume and dark/light mode
+    - Undo last move
+    - Estimation of number of moves
+    - Continue previous game
 #### Additional information 
+
+The logo was made by myself and is also the icon for the app on phone.
+    
+The continue game feature works on web browsers but does not store info between instances due to how shared preferences works on browsers however the feature work as intended on android devices.
