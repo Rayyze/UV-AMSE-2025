@@ -223,7 +223,10 @@
        ry="9.4464951"
        sodipodi:type="rect"
        inkscape:path-effect="#path-effect10"
-       d="M 80.890624,0.89062405 H 432.89062 a 80,80 45 0 1 80,79.99999995 V 432.89062 a 80,80 135 0 1 -80,80 H 80.890624 a 80,80 45 0 1 -79.99999995,-80 V 80.890624 A 80,80 135 0 1 80.890624,0.89062405 Z" />
+       d="M 80.890624,0.89062405 H 432.89062 a 80,80 45 0 1 80,79.99999995 V 432.89062 a 80,80 135 0 1 -80,80 H 80.890624 a 80,80 45 0 1 -79.99999995,-80 V 80.890624 A 80,80 135 0 1 80.890624,0.89062405 Z"
+       inkscape:export-filename="icon.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <rect
        style="fill:#c21d3c;fill-opacity:1;stroke-width:10.946;stroke-linejoin:bevel"
        id="rect3"
